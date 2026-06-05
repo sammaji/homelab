@@ -1,0 +1,92 @@
+services:
+  # ── Infisical ──
+  infisical:
+    image: infisical/infisical:latest-postgres
+    container_name: hlab-infisical
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "5620:8080"
+    environment:
+      NODE_ENV: production
+      ENCRYPTION_KEY: ${INFISICAL_ENCRYPTION_KEY:?INFISICAL_ENCRYPTION_KEY is not set}
+      AUTH_SECRET: ${INFISICAL_AUTH_SECRET:?INFISICAL_AUTH_SECRET is not set}
+      DB_CONNECTION_URI: ${INFISICAL_DB_CONNECTION_URI:?INFISICAL_DB_CONNECTION_URI is not set}
+      REDIS_URL: ${INFISICAL_REDIS_URL:?INFISICAL_REDIS_URL is not set}
+      SITE_URL: ${INFISICAL_SITE_URL:?INFISICAL_SITE_URL is not set}
+      SMTP_HOST: ${INFISICAL_SMTP_HOST:-}
+      SMTP_PORT: ${INFISICAL_SMTP_PORT:-465}
+      SMTP_SECURE: ${INFISICAL_SMTP_SECURE:-true}
+      SMTP_USERNAME: ${INFISICAL_SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${INFISICAL_SMTP_PASSWORD:-}
+      SMTP_FROM_NAME: ${INFISICAL_SMTP_FROM_NAME:-Infisical}
+      SMTP_FROM_ADDRESS: ${INFISICAL_SMTP_FROM_ADDRESS:-}
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    networks:
+      - infisical-net
+
+  # ── PostgreSQL ──
+  postgres:
+    image: postgres:18-alpine
+    container_name: hlab-infisical-postgres
+    restart: unless-stopped
+    # Limit WAL size and shared buffers to keep storage and memory usage low
+    command: >
+      postgres
+      -c shared_buffers=64MB
+      -c max_wal_size=256MB
+      -c min_wal_size=32MB
+      -c wal_compression=on
+    environment:
+      POSTGRES_DB: ${INFISICAL_POSTGRES_DATABASE:?INFISICAL_POSTGRES_DATABASE is not set}
+      POSTGRES_USER: ${INFISICAL_POSTGRES_USER:?INFISICAL_POSTGRES_USER is not set}
+      POSTGRES_PASSWORD: ${INFISICAL_POSTGRES_PASSWORD:?INFISICAL_POSTGRES_PASSWORD is not set}
+    volumes:
+      - hlab-infisical-postgres:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+    networks:
+      - infisical-net
+
+  # ── Redis ──
+  redis:
+    image: redis:8-alpine
+    container_name: hlab-infisical-redis
+    restart: unless-stopped
+    # Cap in-memory data; evict least-recently-used keys when limit hit
+    command: redis-server --maxmemory 64mb --maxmemory-policy allkeys-lru --save ""
+    volumes:
+      - hlab-infisical-redis:/data
+    deploy:
+      resources:
+        limits:
+          memory: 96m
+    networks:
+      - infisical-net
+
+networks:
+  infisical-net:
+    name: hlab-infisical-net
+    driver: bridge
+
+volumes:
+  hlab-infisical-postgres:
+    name: hlab-infisical-postgres
+    driver: local
+  hlab-infisical-redis:
+    name: hlab-infisical-redis
+    driver: local
