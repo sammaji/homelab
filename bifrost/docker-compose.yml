@@ -1,0 +1,61 @@
+services:
+  bifrost-postgres:
+    image: postgres:18-alpine
+    container_name: hlab-bifrost-postgres
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: true
+    environment:
+      POSTGRES_DB: ${BIFROST_POSTGRES_DATABASE:?environment variable BIFROST_POSTGRES_DATABASE is not set.}
+      POSTGRES_USER: ${BIFROST_POSTGRES_USER:?environment variable BIFROST_POSTGRES_USER is not set.}
+      POSTGRES_PASSWORD: ${BIFROST_POSTGRES_PASSWORD:?environment variable BIFROST_POSTGRES_PASSWORD is not set.}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - bifrost-postgres-data:/var/lib/postgresql
+    networks:
+      - bifrost-net
+
+  bifrost:
+    image: maximhq/bifrost:v1.5.6
+    container_name: hlab-bifrost
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: true
+    depends_on:
+      bifrost-postgres:
+        condition: service_healthy
+    ports:
+      - 5625:8080
+    volumes:
+      - ./config.json:/app/data/config.json:ro
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://127.0.0.1:8080/health",
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 30
+      start_period: 10s
+    networks:
+      - bifrost-net
+
+volumes:
+  bifrost-postgres-data:
+    name: hlab-bifrost-postgres-data
+
+networks:
+  bifrost-net:
+    name: hlab-bifrost-net
+    driver: bridge

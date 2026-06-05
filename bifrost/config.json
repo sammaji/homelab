@@ -1,0 +1,42 @@
+{
+  "$schema": "https://www.getbifrost.ai/schema",
+  "config_store": {
+    "enabled": true,
+    "type": "postgres",
+    "config": {
+      "host": "bifrost-postgres",
+      "port": "5432",
+      "user": "env.BIFROST_POSTGRES_USER",
+      "password": "env.BIFROST_POSTGRES_PASSWORD",
+      "db_name": "env.BIFROST_POSTGRES_DATABASE",
+      "ssl_mode": "disable"
+    }
+  },
+  "logs_store": {
+    "enabled": true,
+    "type": "postgres",
+    "config": {
+      "host": "bifrost-postgres",
+      "port": "5432",
+      "user": "env.BIFROST_POSTGRES_USER",
+      "password": "env.BIFROST_POSTGRES_PASSWORD",
+      "db_name": "env.BIFROST_POSTGRES_DATABASE",
+      "ssl_mode": "disable"
+    }
+  },
+  "client": {
+    "allowed_headers": ["*"],
+    "allow_per_request_raw_override": true,
+    "allow_per_request_content_storage_override": true,
+    "enforce_auth_on_inference": true
+  },
+  "encryption_key": "env.BIFROST_ENCRYPTION_KEY",
+  "governance": {
+    "auth_config": {
+      "admin_username": "env.BIFROST_ADMIN_USERNAME",
+      "admin_password": "env.BIFROST_ADMIN_PASSWORD",
+      "is_enabled": true,
+      "disable_auth_on_inference": true
+    }
+  }
+}
