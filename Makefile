@@ -25,13 +25,13 @@ endif
 	cd $* && $(INFISICAL_RUN) docker-compose up -d
 
 %-down:
-	cd $* && docker-compose down
+	cd $* && $(INFISICAL_RUN) docker-compose down
 
 %-ps:
-	cd $* && docker-compose ps
+	cd $* && $(INFISICAL_RUN) docker-compose ps
 
 %-logs:
-	cd $* && docker-compose logs -f
+	cd $* && $(INFISICAL_RUN) docker-compose logs -f
 
 %-restart:
 	cd $* && $(INFISICAL_RUN) docker-compose restart
