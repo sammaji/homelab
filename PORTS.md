@@ -6,6 +6,9 @@ Always keep a buffer of at least 5-10 ports open between services. 20 if your se
 
 | Host Port | Container Port | Service | Description |
 |-----------|---------------|---------|-------------|
+| 5200 | 3000 | watchthatsite-proxy | Watchthatsite Proxy |
+| 5201 | 8080 | watchthatsite-bifrost | Watchthatsite Bifrost |
+| 5600 | 3000 | grafana | Grafana UI |
 | 5600 | 3000 | grafana | Grafana UI |
 | 5601 | 9090 | prometheus | Prometheus UI |
 | 5602 | 3200 | tempo | Tempo HTTP API |
