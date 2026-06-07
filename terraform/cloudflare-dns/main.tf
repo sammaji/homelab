@@ -21,3 +21,9 @@ data "cloudflare_zone" "budget_bee_app" {
     name = "budget-bee.app"
   }
 }
+
+data "cloudflare_zone" "watchthat_site" {
+  filter = {
+    name = "watchthat.site"
+  }
+}

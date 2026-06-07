@@ -8,6 +8,11 @@ locals {
     "n8n",
     "nocodb",
   ])
+
+  watchthat_site_subdomains = toset([
+    "proxy",
+    "bifrost"
+  ])
 }
 
 # ── sammaji.com subdomains ──
@@ -26,6 +31,18 @@ resource "cloudflare_dns_record" "sammaji_com" {
 resource "cloudflare_dns_record" "api_budget_bee_app" {
   zone_id = data.cloudflare_zone.budget_bee_app.id
   name    = "api.budget-bee.app"
+  type    = "A"
+  content = var.vps_ip
+  proxied = false
+  ttl     = 60
+}
+
+# ── watchthat.site subdomains ──
+resource "cloudflare_dns_record" "watchthat_site" {
+  for_each = local.watchthat_site_subdomains
+
+  zone_id = data.cloudflare_zone.watchthat_site.id
+  name    = "${each.key}.watchthat.site"
   type    = "A"
   content = var.vps_ip
   proxied = false
