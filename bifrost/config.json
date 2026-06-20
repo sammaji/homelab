@@ -37,6 +37,217 @@
       "admin_password": "env.BIFROST_ADMIN_PASSWORD",
       "is_enabled": true,
       "disable_auth_on_inference": true
+    },
+    "routing_rules": [
+      {
+        "id": "gemini-pro",
+        "name": "gemini-pro",
+        "enabled": true,
+        "cel_expression": "model == 'gemini-pro'",
+        "targets": [
+          {
+            "provider": "gemini",
+            "model": "gemini-3.1-pro",
+            "weight": 0.5
+          },
+          {
+            "provider": "gemini",
+            "model": "gemini-2.5-pro",
+            "weight": 0.5
+          }
+        ],
+        "scope": "global",
+        "priority": 1
+      },
+      {
+        "id": "gemini-flash",
+        "name": "gemini-flash",
+        "enabled": true,
+        "cel_expression": "model == 'gemini-flash'",
+        "targets": [
+          {
+            "provider": "gemini",
+            "model": "gemini-3.5-flash",
+            "weight": 0.17
+          },
+          {
+            "provider": "gemini",
+            "model": "gemini-3.1-flash-lite",
+            "weight": 0.25
+          },
+          {
+            "provider": "gemini",
+            "model": "gemini-3-flash-preview",
+            "weight": 0.17
+          },
+          {
+            "provider": "gemini",
+            "model": "gemini-2.5-flash",
+            "weight": 0.16
+          },
+          {
+            "provider": "gemini",
+            "model": "gemini-2.5-flash-lite",
+            "weight": 0.25
+          }
+        ],
+        "scope": "global",
+        "priority": 2
+      },
+      {
+        "id": "gemini-3-flash",
+        "name": "gemini-3-flash",
+        "enabled": true,
+        "cel_expression": "model == 'gemini-3-flash'",
+        "targets": [
+          {
+            "provider": "gemini",
+            "model": "gemini-3.5-flash",
+            "weight": 0.287
+          },
+          {
+            "provider": "gemini",
+            "model": "gemini-3.1-flash-lite",
+            "weight": 0.426
+          },
+          {
+            "provider": "gemini",
+            "model": "gemini-3-flash-preview",
+            "weight": 0.287
+          }
+        ],
+        "scope": "global",
+        "priority": 3
+      },
+      {
+        "id": "gpt-oss-120b",
+        "name": "gpt-oss-120b",
+        "enabled": true,
+        "cel_expression": "model == 'gpt-oss-120b'",
+        "targets": [
+          {
+            "provider": "openrouter",
+            "model": "openai/gpt-oss-120b:free",
+            "weight": 0.4
+          },
+          { "provider": "groq", "model": "openai/gpt-oss-120b", "weight": 0.3 },
+          {
+            "provider": "cerebras",
+            "model": "openai/gpt-oss-120b",
+            "weight": 0.3
+          }
+        ],
+        "scope": "global",
+        "priority": 4
+      },
+      {
+        "id": "gpt-oss-20b",
+        "name": "gpt-oss-20b",
+        "enabled": true,
+        "cel_expression": "model == 'gpt-oss-20b'",
+        "targets": [
+          {
+            "provider": "openrouter",
+            "model": "openai/gpt-oss-20b:free",
+            "weight": 0.5
+          },
+          { "provider": "groq", "model": "openai/gpt-oss-20b", "weight": 0.5 }
+        ],
+        "scope": "global",
+        "priority": 5
+      }
+    ]
+  },
+  "providers": {
+    "gemini": {
+      "keys": [
+        {
+          "name": "gemini-key-01",
+          "value": "env.GEMINI_API_KEY_01",
+          "models": [
+            "gemini-3.5-flash",
+            "gemini-3.1-pro",
+            "gemini-3.1-flash-lite",
+            "gemini-3-flash-preview",
+            "gemini-2.5-pro",
+            "gemini-2.5-flash",
+            "gemini-2.5-flash-lite"
+          ],
+          "weight": 1.0
+        },
+        {
+          "name": "gemini-key-02",
+          "value": "env.GEMINI_API_KEY_02",
+          "models": [
+            "gemini-3.5-flash",
+            "gemini-3.1-pro",
+            "gemini-3.1-flash-lite",
+            "gemini-3-flash-preview",
+            "gemini-2.5-pro",
+            "gemini-2.5-flash",
+            "gemini-2.5-flash-lite"
+          ],
+          "weight": 1.0
+        },
+        {
+          "name": "gemini-key-03",
+          "value": "env.GEMINI_API_KEY_03",
+          "models": [
+            "gemini-3.5-flash",
+            "gemini-3.1-pro",
+            "gemini-3.1-flash-lite",
+            "gemini-3-flash-preview",
+            "gemini-2.5-pro",
+            "gemini-2.5-flash",
+            "gemini-2.5-flash-lite"
+          ],
+          "weight": 1.0
+        },
+        {
+          "name": "gemini-key-04",
+          "value": "env.GEMINI_API_KEY_04",
+          "models": [
+            "gemini-3.5-flash",
+            "gemini-3.1-pro",
+            "gemini-3.1-flash-lite",
+            "gemini-3-flash-preview",
+            "gemini-2.5-pro",
+            "gemini-2.5-flash",
+            "gemini-2.5-flash-lite"
+          ],
+          "weight": 1.0
+        }
+      ]
+    },
+    "openrouter": {
+      "keys": [
+        {
+          "name": "openrouter-gpt-key",
+          "value": "env.OPENROUTER_API_KEY",
+          "models": ["openai/gpt-oss-120b:free", "openai/gpt-oss-20b:free"],
+          "weight": 1.0
+        }
+      ]
+    },
+    "groq": {
+      "keys": [
+        {
+          "name": "groq-gpt-key",
+          "value": "env.GROQ_API_KEY",
+          "models": ["openai/gpt-oss-120b", "openai/gpt-oss-20b"],
+          "weight": 1.0
+        }
+      ]
+    },
+    "cerebras": {
+      "keys": [
+        {
+          "name": "cerebras-gpt-key",
+          "value": "env.CEREBRAS_API_KEY",
+          "models": ["openai/gpt-oss-120b"],
+          "weight": 1.0
+        }
+      ]
     }
   }
 }

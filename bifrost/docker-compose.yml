@@ -3,9 +3,6 @@ services:
     image: postgres:18-alpine
     container_name: hlab-bifrost-postgres
     restart: unless-stopped
-    env_file:
-      - path: .env
-        required: true
     environment:
       POSTGRES_DB: ${BIFROST_POSTGRES_DATABASE:?environment variable BIFROST_POSTGRES_DATABASE is not set.}
       POSTGRES_USER: ${BIFROST_POSTGRES_USER:?environment variable BIFROST_POSTGRES_USER is not set.}
@@ -21,12 +18,23 @@ services:
       - bifrost-net
 
   bifrost:
-    image: maximhq/bifrost:v1.5.6
+    image: maximhq/bifrost:v1.5.15
     container_name: hlab-bifrost
     restart: unless-stopped
-    env_file:
-      - path: .env
-        required: true
+    environment:
+      BIFROST_POSTGRES_DATABASE: ${BIFROST_POSTGRES_DATABASE:?environment variable BIFROST_POSTGRES_DATABASE is not set.}
+      BIFROST_POSTGRES_USER: ${BIFROST_POSTGRES_USER:?environment variable BIFROST_POSTGRES_USER is not set.}
+      BIFROST_POSTGRES_PASSWORD: ${BIFROST_POSTGRES_PASSWORD:?environment variable BIFROST_POSTGRES_PASSWORD is not set.}
+      BIFROST_ENCRYPTION_KEY: ${BIFROST_ENCRYPTION_KEY:?environment variable BIFROST_ENCRYPTION_KEY is not set.}
+      BIFROST_ADMIN_USERNAME: ${BIFROST_ADMIN_USERNAME:?environment variable BIFROST_ADMIN_USERNAME is not set.}
+      BIFROST_ADMIN_PASSWORD: ${BIFROST_ADMIN_PASSWORD:?environment variable BIFROST_ADMIN_PASSWORD is not set.}
+      GEMINI_API_KEY_01: ${GEMINI_API_KEY_01:?environment variable GEMINI_API_KEY_01 is not set.}
+      GEMINI_API_KEY_02: ${GEMINI_API_KEY_02:?environment variable GEMINI_API_KEY_02 is not set.}
+      GEMINI_API_KEY_03: ${GEMINI_API_KEY_03:?environment variable GEMINI_API_KEY_03 is not set.}
+      GEMINI_API_KEY_04: ${GEMINI_API_KEY_04:?environment variable GEMINI_API_KEY_04 is not set.}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:?environment variable OPENROUTER_API_KEY is not set.}
+      GROQ_API_KEY: ${GROQ_API_KEY:?environment variable GROQ_API_KEY is not set.}
+      CEREBRAS_API_KEY: ${CEREBRAS_API_KEY:?environment variable CEREBRAS_API_KEY is not set.}
     depends_on:
       bifrost-postgres:
         condition: service_healthy
