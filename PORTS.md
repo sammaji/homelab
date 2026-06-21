@@ -17,7 +17,8 @@ publicly.
 | 5025-5039 | `bifrost` |
 | 5040-5054 | `n8n` |
 | 5055-5069 | `listmonk` |
-| 5070+ | free (next stack starts here) |
+| 5070-5089 | `media` |
+| 5090+ | free (next stack starts here) |
 
 ## Ports
 
@@ -37,3 +38,9 @@ publicly.
 | 5025 | 8080 | bifrost | Bifrost UI & API |
 | 5040 | 5678 | n8n | n8n UI & API (webhooks) |
 | 5055 | 9000 | listmonk | Listmonk UI & API |
+| 5070 | 8096 | jellyfin | Jellyfin UI |
+| 5071 | 9696 | prowlarr | Prowlarr UI |
+| 5072 | 7878 | radarr | Radarr UI |
+| 5073 | 8989 | sonarr | Sonarr UI |
+| 5074 | 8080 | qbittorrent | qBittorrent Web UI |
+| 5075 | 5075 | qbittorrent | qBittorrent Peer (TCP+UDP) |
