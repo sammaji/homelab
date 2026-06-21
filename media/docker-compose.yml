@@ -1,0 +1,104 @@
+# Media stack: Jellyfin + *arr (Prowlarr/Radarr/Sonarr) + qBittorrent.
+#
+# Single ${MEDIA_DATA}:/data mount across qBittorrent + Radarr + Sonarr so
+# downloads and the library live on one filesystem. This lets the *arr apps
+# hardlink (instant, no extra disk) instead of copy when importing. Layout:
+#   ${MEDIA_DATA}/torrents      <- qBittorrent download dir   (/data/torrents)
+#   ${MEDIA_DATA}/media/movies  <- Radarr root folder         (/data/media/movies)
+#   ${MEDIA_DATA}/media/tv      <- Sonarr root folder         (/data/media/tv)
+# Jellyfin gets ${MEDIA_DATA}/media read-only at /media.
+#
+# Only Jellyfin is reverse-proxied (jellyfin.sammaji.com). The admin UIs bind
+# to 127.0.0.1 — reach them via SSH tunnel, e.g. ssh -L 5632:127.0.0.1:5632 vps.
+
+services:
+  # --- Media Server ---
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: hlab-jellyfin
+    restart: unless-stopped
+    environment:
+      - JELLYFIN_PublishedServerUrl=https://jellyfin.sammaji.com
+    ports:
+      - "127.0.0.1:5630:8096"
+    volumes:
+      - ./config/jellyfin:/config
+      - ./config/jellyfin-cache:/cache
+      - ${MEDIA_DATA:?set MEDIA_DATA in .env}/media:/media:ro
+    networks:
+      - media-net
+
+  # --- Indexer Manager (feeds Radarr/Sonarr) ---
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: hlab-prowlarr
+    restart: unless-stopped
+    environment:
+      - PUID=${MEDIA_PUID:-1001}
+      - PGID=${MEDIA_PGID:-1001}
+      - TZ=${MEDIA_TZ:-Asia/Kolkata}
+    ports:
+      - "127.0.0.1:5631:9696"
+    volumes:
+      - ./config/prowlarr:/config
+    networks:
+      - media-net
+
+  # --- Movie Manager ---
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: hlab-radarr
+    restart: unless-stopped
+    environment:
+      - PUID=${MEDIA_PUID:-1001}
+      - PGID=${MEDIA_PGID:-1001}
+      - TZ=${MEDIA_TZ:-Asia/Kolkata}
+    ports:
+      - "127.0.0.1:5632:7878"
+    volumes:
+      - ./config/radarr:/config
+      - ${MEDIA_DATA:?set MEDIA_DATA in .env}:/data
+    networks:
+      - media-net
+
+  # --- TV Show Manager ---
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: hlab-sonarr
+    restart: unless-stopped
+    environment:
+      - PUID=${MEDIA_PUID:-1001}
+      - PGID=${MEDIA_PGID:-1001}
+      - TZ=${MEDIA_TZ:-Asia/Kolkata}
+    ports:
+      - "127.0.0.1:5633:8989"
+    volumes:
+      - ./config/sonarr:/config
+      - ${MEDIA_DATA:?set MEDIA_DATA in .env}:/data
+    networks:
+      - media-net
+
+  # --- Torrent Downloader ---
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: hlab-qbittorrent
+    restart: unless-stopped
+    environment:
+      - PUID=${MEDIA_PUID:-1001}
+      - PGID=${MEDIA_PGID:-1001}
+      - TZ=${MEDIA_TZ:-Asia/Kolkata}
+      - WEBUI_PORT=8080
+    ports:
+      - "127.0.0.1:5634:8080" # Web UI (loopback only)
+      - "5635:5635" # Torrent peer port (public for inbound peers)
+      - "5635:5635/udp"
+    volumes:
+      - ./config/qbittorrent:/config
+      - ${MEDIA_DATA:?set MEDIA_DATA in .env}:/data
+    networks:
+      - media-net
+
+networks:
+  media-net:
+    name: hlab-media-net
+    driver: bridge
