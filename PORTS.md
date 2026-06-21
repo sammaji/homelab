@@ -19,4 +19,10 @@ Always keep a buffer of at least 5-10 ports open between services. 20 if your se
 | 5607 | 13133 | otel-collector | OTLP Health check |
 | 5620 | 8080 | infisical | Infisical UI & API |
 | 5625 | 8080 | bifrost | Bifrost UI & API |
+| 5630 | 8096 | jellyfin | Jellyfin UI |
+| 5631 | 9696 | prowlarr | Prowlarr UI |
+| 5632 | 7878 | radarr | Radarr UI |
+| 5633 | 8989 | sonarr | Sonarr UI |
+| 5634 | 8080 | qbittorrent | qBittorrent Web UI |
+| 5635 | 5635 | qbittorrent | qBittorrent Peer |
 

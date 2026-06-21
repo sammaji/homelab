@@ -4,6 +4,7 @@ locals {
     "dostack",
     "grafana",
     "infisical",
+    "jellyfin",
     "medatlas",
     "n8n",
     "nocodb",
@@ -45,6 +46,15 @@ resource "cloudflare_dns_record" "watchthat_site" {
   name    = "${each.key}.watchthat.site"
   type    = "A"
   content = var.vps_ip
+  proxied = false
+  ttl     = 60
+}
+
+resource "cloudflare_dns_record" "samplepages_watchthat_site" {
+  zone_id = data.cloudflare_zone.watchthat_site.id
+  name    = "samplepages.watchthat.site"
+  type    = "CNAME"
+  content = "d5803da95b8a2fe5.vercel-dns-017.com"
   proxied = false
   ttl     = 60
 }
