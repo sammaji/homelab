@@ -7,6 +7,7 @@ locals {
     "medatlas",
     "n8n",
     "nocodb",
+    "paytrack",
   ])
 
   watchthat_site_subdomains = toset([
