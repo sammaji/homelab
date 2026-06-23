@@ -19,4 +19,5 @@ Always keep a buffer of at least 5-10 ports open between services. 20 if your se
 | 5607 | 13133 | otel-collector | OTLP Health check |
 | 5620 | 8080 | infisical | Infisical UI & API |
 | 5625 | 8080 | bifrost | Bifrost UI & API |
+| 5640 | 5678 | n8n | n8n UI & API (webhooks) |
 
