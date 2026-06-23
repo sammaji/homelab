@@ -34,6 +34,7 @@ services:
       N8N_HOST: ${N8N_HOST:-localhost}
       N8N_PORT: 5678
       N8N_PROTOCOL: https
+      N8N_PROXY_HOPS: ${N8N_PROXY_HOPS:-1}
       WEBHOOK_URL: ${N8N_WEBHOOK_URL:-}
       N8N_METRICS: "true"
       N8N_PERSONALIZATION_ENABLED: ${N8N_PERSONALIZATION_ENABLED:-false}
