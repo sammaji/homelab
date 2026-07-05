@@ -28,6 +28,15 @@ resource "cloudflare_dns_record" "sammaji_com" {
   ttl     = 60
 }
 
+resource "cloudflare_dns_record" "scp_sammaji_com" {
+  zone_id = data.cloudflare_zone.sammaji_com.id
+  name    = "scp.sammaji.com"
+  type    = "CNAME"
+  content = "e548a925ca8fd88a.vercel-dns-017.com"
+  proxied = false
+  ttl     = 60
+}
+
 # ── budget-bee.app subdomains ──
 resource "cloudflare_dns_record" "api_budget_bee_app" {
   zone_id = data.cloudflare_zone.budget_bee_app.id
@@ -39,6 +48,51 @@ resource "cloudflare_dns_record" "api_budget_bee_app" {
 }
 
 # ── watchthat.site subdomains ──
+resource "cloudflare_dns_record" "root_watchthat_site" {
+  zone_id = data.cloudflare_zone.watchthat_site.id
+  name    = "@"
+  type    = "CNAME"
+  content = "97378c52d48be7eb.vercel-dns-017.com"
+  proxied = false
+  ttl     = 60
+}
+
+resource "cloudflare_dns_record" "www_watchthat_site" {
+  zone_id = data.cloudflare_zone.watchthat_site.id
+  name    = "www.watchthat.site"
+  type    = "CNAME"
+  content = "97378c52d48be7eb.vercel-dns-017.com"
+  proxied = false
+  ttl     = 60
+}
+
+resource "cloudflare_dns_record" "app_watchthat_site" {
+  zone_id = data.cloudflare_zone.watchthat_site.id
+  name    = "app.watchthat.site"
+  type    = "CNAME"
+  content = "88ea97c7df9f77f8.vercel-dns-017.com"
+  proxied = false
+  ttl     = 60
+}
+
+resource "cloudflare_dns_record" "docs_watchthat_site" {
+  zone_id = data.cloudflare_zone.watchthat_site.id
+  name    = "docs.watchthat.site"
+  type    = "CNAME"
+  content = "b34d63d85116b2ab.vercel-dns-017.com"
+  proxied = false
+  ttl     = 60
+}
+
+resource "cloudflare_dns_record" "samplepages_watchthat_site" {
+  zone_id = data.cloudflare_zone.watchthat_site.id
+  name    = "samplepages.watchthat.site"
+  type    = "CNAME"
+  content = "d5803da95b8a2fe5.vercel-dns-017.com"
+  proxied = false
+  ttl     = 60
+}
+
 resource "cloudflare_dns_record" "watchthat_site" {
   for_each = local.watchthat_site_subdomains
 
