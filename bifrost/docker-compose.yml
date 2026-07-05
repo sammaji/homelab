@@ -18,7 +18,7 @@ services:
       - bifrost-net
 
   bifrost:
-    image: maximhq/bifrost:v1.5.15
+    image: maximhq/bifrost:v1.6.16
     container_name: hlab-bifrost
     restart: unless-stopped
     environment:
