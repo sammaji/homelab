@@ -48,19 +48,47 @@ resource "cloudflare_dns_record" "api_budget_bee_app" {
 }
 
 # ── watchthat.site subdomains ──
-resource "cloudflare_dns_record" "watchthat_site_cnames" {
-  for_each = {
-    "@"                          = "97378c52d48be7eb.vercel-dns-017.com"
-    "www.watchthat.site"         = "97378c52d48be7eb.vercel-dns-017.com"
-    "app.watchthat.site"         = "88ea97c7df9f77f8.vercel-dns-017.com"
-    "docs.watchthat.site"        = "b34d63d85116b2ab.vercel-dns-017.com"
-    "samplepages.watchthat.site" = "d5803da95b8a2fe5.vercel-dns-017.com"
-  }
-
+resource "cloudflare_dns_record" "root_watchthat_site" {
   zone_id = data.cloudflare_zone.watchthat_site.id
-  name    = each.key
+  name    = "@"
   type    = "CNAME"
-  content = each.value
+  content = "97378c52d48be7eb.vercel-dns-017.com"
+  proxied = false
+  ttl     = 60
+}
+
+resource "cloudflare_dns_record" "www_watchthat_site" {
+  zone_id = data.cloudflare_zone.watchthat_site.id
+  name    = "www.watchthat.site"
+  type    = "CNAME"
+  content = "97378c52d48be7eb.vercel-dns-017.com"
+  proxied = false
+  ttl     = 60
+}
+
+resource "cloudflare_dns_record" "app_watchthat_site" {
+  zone_id = data.cloudflare_zone.watchthat_site.id
+  name    = "app.watchthat.site"
+  type    = "CNAME"
+  content = "88ea97c7df9f77f8.vercel-dns-017.com"
+  proxied = false
+  ttl     = 60
+}
+
+resource "cloudflare_dns_record" "docs_watchthat_site" {
+  zone_id = data.cloudflare_zone.watchthat_site.id
+  name    = "docs.watchthat.site"
+  type    = "CNAME"
+  content = "b34d63d85116b2ab.vercel-dns-017.com"
+  proxied = false
+  ttl     = 60
+}
+
+resource "cloudflare_dns_record" "samplepages_watchthat_site" {
+  zone_id = data.cloudflare_zone.watchthat_site.id
+  name    = "samplepages.watchthat.site"
+  type    = "CNAME"
+  content = "d5803da95b8a2fe5.vercel-dns-017.com"
   proxied = false
   ttl     = 60
 }
