@@ -160,6 +160,26 @@
     ]
   },
   "providers": {
+    "cerebras": {
+      "keys": [
+        {
+          "name": "cerebras-gpt-key",
+          "value": "env.CEREBRAS_API_KEY",
+          "models": ["openai/gpt-oss-120b"],
+          "weight": 1.0
+        }
+      ]
+    },
+    "deepseek": {
+      "keys": [
+        {
+          "name": "deepseek-key",
+          "value": "env.DEEPSEEK_API_KEY",
+          "models": ["deepseek/deepseek-v4-flash", "deepseek/deepseek-v4-pro"],
+          "weight": 1.0
+        }
+      ]
+    },
     "gemini": {
       "keys": [
         {
@@ -204,30 +224,6 @@
             "gemini-2.5-flash-lite"
           ],
           "weight": 1.0
-        },
-        {
-          "name": "gemini-key-04",
-          "value": "env.GEMINI_API_KEY_04",
-          "models": [
-            "gemini-3.5-flash",
-            "gemini-3.1-pro",
-            "gemini-3.1-flash-lite",
-            "gemini-3-flash-preview",
-            "gemini-2.5-pro",
-            "gemini-2.5-flash",
-            "gemini-2.5-flash-lite"
-          ],
-          "weight": 1.0
-        }
-      ]
-    },
-    "openrouter": {
-      "keys": [
-        {
-          "name": "openrouter-gpt-key",
-          "value": "env.OPENROUTER_API_KEY",
-          "models": ["openai/gpt-oss-120b:free", "openai/gpt-oss-20b:free"],
-          "weight": 1.0
         }
       ]
     },
@@ -241,12 +237,20 @@
         }
       ]
     },
-    "cerebras": {
+    "openrouter": {
       "keys": [
         {
-          "name": "cerebras-gpt-key",
-          "value": "env.CEREBRAS_API_KEY",
-          "models": ["openai/gpt-oss-120b"],
+          "name": "openrouter-key",
+          "value": "env.OPENROUTER_API_KEY",
+          "models": [
+            "openai/gpt-oss-120b:free",
+            "openai/gpt-oss-20b:free",
+            "tencent/hy3:free",
+            "nvidia/nemotron-3-ultra-550b-a55b:free",
+            "poolside/laguna-xs-2.1:free",
+            "poolside/laguna-m.1:free",
+            "cohere/north-mini-code:free"
+          ],
           "weight": 1.0
         }
       ]
