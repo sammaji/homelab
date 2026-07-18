@@ -18,7 +18,7 @@ services:
       - bifrost-net
 
   bifrost:
-    image: maximhq/bifrost:v1.6.3
+    image: maximhq/bifrost:v1.6.4
     container_name: hlab-bifrost
     restart: unless-stopped
     environment:
@@ -31,7 +31,7 @@ services:
       GEMINI_API_KEY_01: ${GEMINI_API_KEY_01:?environment variable GEMINI_API_KEY_01 is not set.}
       GEMINI_API_KEY_02: ${GEMINI_API_KEY_02:?environment variable GEMINI_API_KEY_02 is not set.}
       GEMINI_API_KEY_03: ${GEMINI_API_KEY_03:?environment variable GEMINI_API_KEY_03 is not set.}
-      GEMINI_API_KEY_04: ${GEMINI_API_KEY_04:?environment variable GEMINI_API_KEY_04 is not set.}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:?environment variable DEEPSEEK_API_KEY is not set.}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:?environment variable OPENROUTER_API_KEY is not set.}
       GROQ_API_KEY: ${GROQ_API_KEY:?environment variable GROQ_API_KEY is not set.}
       CEREBRAS_API_KEY: ${CEREBRAS_API_KEY:?environment variable CEREBRAS_API_KEY is not set.}
