@@ -17,7 +17,8 @@ else
 endif
 
 .PHONY: help init nginx-link nginx-apply \
-        infisical-up infisical-down infisical-ps infisical-logs infisical-restart
+        infisical-up infisical-down infisical-ps infisical-logs infisical-restart \
+        zulip-init zulip-register-push
 
 
 # ── Pattern rules ──
@@ -52,6 +53,17 @@ infisical-logs:
 
 infisical-restart:
 	cd infisical && docker-compose restart
+
+
+# ── Zulip (one-time DB/config bootstrap, required before the first zulip-up) ──
+zulip-init:
+	cd zulip && $(INFISICAL_RUN) docker-compose run --rm zulip app:init
+
+# Registers this server with Zulip's Mobile Push Notification Service (interactive:
+# prints what will be sent and asks you to accept their ToS). Run once after zulip-up,
+# and again any time SETTING_EXTERNAL_HOST or SETTING_ZULIP_ADMINISTRATOR change.
+zulip-register-push:
+	cd zulip && $(INFISICAL_RUN) docker-compose exec zulip app:managepy register_server
 
 
 # ── Init ──
@@ -116,3 +128,7 @@ help:
 	@echo ""
 	@echo "Infisical stack (always uses .env, never Infisical CLI):"
 	@echo "  make infisical-up / down / ps / logs / restart"
+	@echo ""
+	@echo "Zulip:"
+	@echo "  make zulip-init            - One-time DB/config bootstrap; run once before the first zulip-up"
+	@echo "  make zulip-register-push  - Register server for mobile push notifications (interactive)"
