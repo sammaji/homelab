@@ -1,0 +1,169 @@
+secrets:
+  zulip__postgres_password:
+    environment: "ZULIP__POSTGRES_PASSWORD"
+  zulip__memcached_password:
+    environment: "ZULIP__MEMCACHED_PASSWORD"
+  zulip__rabbitmq_password:
+    environment: "ZULIP__RABBITMQ_PASSWORD"
+  zulip__redis_password:
+    environment: "ZULIP__REDIS_PASSWORD"
+  zulip__secret_key:
+    environment: "ZULIP__SECRET_KEY"
+  zulip__email_password:
+    environment: "ZULIP__EMAIL_PASSWORD"
+
+services:
+  zulip-postgres:
+    image: zulip/zulip-postgresql:14
+    container_name: hlab-zulip-postgres
+    restart: unless-stopped
+    secrets:
+      - zulip__postgres_password
+    environment:
+      POSTGRES_DB: zulip
+      POSTGRES_USER: zulip
+      POSTGRES_PASSWORD_FILE: /run/secrets/zulip__postgres_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zulip -d zulip"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - zulip-postgres-data:/var/lib/postgresql/data
+    networks:
+      - zulip-net
+
+  zulip-memcached:
+    image: memcached:alpine
+    container_name: hlab-zulip-memcached
+    restart: unless-stopped
+    command:
+      - sh
+      - -euc
+      - |
+        echo 'mech_list: plain' > "$$SASL_CONF_PATH"
+        echo "zulip@$$HOSTNAME:$$(cat $$MEMCACHED_PASSWORD_FILE)" > "$$MEMCACHED_SASL_PWDB"
+        echo "zulip@localhost:$$(cat $$MEMCACHED_PASSWORD_FILE)" >> "$$MEMCACHED_SASL_PWDB"
+        exec memcached -S
+    secrets:
+      - zulip__memcached_password
+    environment:
+      SASL_CONF_PATH: /home/memcache/memcached.conf
+      MEMCACHED_SASL_PWDB: /home/memcache/memcached-sasl-db
+      MEMCACHED_PASSWORD_FILE: /run/secrets/zulip__memcached_password
+    networks:
+      - zulip-net
+
+  zulip-rabbitmq:
+    image: rabbitmq:4.2
+    container_name: hlab-zulip-rabbitmq
+    restart: unless-stopped
+    command:
+      - sh
+      - -euc
+      - |
+        export RABBITMQ_DEFAULT_PASS="$$(cat $$RABBITMQ_PASSWORD_FILE)"
+        echo 'default_user = $$(RABBITMQ_DEFAULT_USER)' >> /etc/rabbitmq/rabbitmq.conf
+        echo 'default_pass = $$(RABBITMQ_DEFAULT_PASS)' >> /etc/rabbitmq/rabbitmq.conf
+        exec docker-entrypoint.sh rabbitmq-server
+    secrets:
+      - zulip__rabbitmq_password
+    environment:
+      RABBITMQ_DEFAULT_USER: zulip
+      RABBITMQ_PASSWORD_FILE: /run/secrets/zulip__rabbitmq_password
+    volumes:
+      - zulip-rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - zulip-net
+
+  zulip-redis:
+    image: redis:alpine
+    container_name: hlab-zulip-redis
+    restart: unless-stopped
+    command:
+      - sh
+      - -euc
+      - /usr/local/bin/docker-entrypoint.sh --requirepass "$$(cat $$REDIS_PASSWORD_FILE)"
+    secrets:
+      - zulip__redis_password
+    environment:
+      REDIS_PASSWORD_FILE: /run/secrets/zulip__redis_password
+    volumes:
+      - zulip-redis-data:/data
+    networks:
+      - zulip-net
+
+  zulip:
+    image: ghcr.io/zulip/zulip-server:12.1-0
+    container_name: hlab-zulip
+    restart: unless-stopped
+    ports:
+      - 5650:80
+    secrets:
+      - zulip__postgres_password
+      - zulip__memcached_password
+      - zulip__rabbitmq_password
+      - zulip__redis_password
+      - zulip__secret_key
+      - zulip__email_password
+    environment:
+      SETTING_REMOTE_POSTGRES_HOST: zulip-postgres
+      SETTING_MEMCACHED_LOCATION: zulip-memcached:11211
+      SETTING_RABBITMQ_HOST: zulip-rabbitmq
+      SETTING_REDIS_HOST: zulip-redis
+      # Required: public hostname and administrator contact for this realm
+      SETTING_EXTERNAL_HOST: ${ZULIP_EXTERNAL_HOST:?environment variable ZULIP_EXTERNAL_HOST is not set.}
+      SETTING_ZULIP_ADMINISTRATOR: ${ZULIP_ADMIN_EMAIL:?environment variable ZULIP_ADMIN_EMAIL is not set.}
+      # TLS is terminated by the host nginx; trust its X-Forwarded-* headers via the docker gateway IP
+      TRUST_GATEWAY_IP: "True"
+      # Outgoing email (invites, notifications, password resets) - optional but strongly recommended
+      SETTING_EMAIL_HOST: ${ZULIP_SMTP_HOST:-}
+      SETTING_EMAIL_HOST_USER: ${ZULIP_SMTP_USERNAME:-}
+      SETTING_EMAIL_PORT: ${ZULIP_SMTP_PORT:-587}
+      SETTING_EMAIL_USE_TLS: "True"
+      ZULIP_AUTH_BACKENDS: ${ZULIP_AUTH_BACKENDS:-EmailAuthBackend}
+      # Mobile push notifications via Zulip's cloud relay service. Free for orgs with
+      # <=10 users (or the free Community plan if eligible); requires uploading basic
+      # server metadata. Also requires running `app:managepy register_server` once - see README.
+      SETTING_ZULIP_SERVICE_PUSH_NOTIFICATIONS: "True"
+      # Basic metadata upload is mandatory for the service above; this opts out of the
+      # additional (non-mandatory) usage-statistics upload.
+      SETTING_ZULIP_SERVICE_SUBMIT_USAGE_STATISTICS: "False"
+    volumes:
+      - zulip-data:/data
+    ulimits:
+      nofile:
+        soft: 1000000
+        hard: 1048576
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1/api/v1/server_settings || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    depends_on:
+      zulip-postgres:
+        condition: service_healthy
+      zulip-memcached:
+        condition: service_started
+      zulip-rabbitmq:
+        condition: service_started
+      zulip-redis:
+        condition: service_started
+    networks:
+      - zulip-net
+
+volumes:
+  zulip-data:
+    name: hlab-zulip-data
+  zulip-postgres-data:
+    name: hlab-zulip-postgres-data
+  zulip-rabbitmq-data:
+    name: hlab-zulip-rabbitmq-data
+  zulip-redis-data:
+    name: hlab-zulip-redis-data
+
+networks:
+  zulip-net:
+    name: hlab-zulip-net
+    driver: bridge

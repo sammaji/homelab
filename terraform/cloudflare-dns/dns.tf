@@ -8,6 +8,7 @@ locals {
     "n8n",
     "nocodb",
     "paytrack",
+    "zulip",
   ])
 
   watchthat_site_subdomains = toset([
