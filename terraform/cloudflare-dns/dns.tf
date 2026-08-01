@@ -45,6 +45,16 @@ resource "cloudflare_dns_record" "scp_sammaji_com" {
   ttl     = 60
 }
 
+# GoHighLevel custom domain (funnel testing)
+resource "cloudflare_dns_record" "ghl_sammaji_com" {
+  zone_id = data.cloudflare_zone.sammaji_com.id
+  name    = "ghl.sammaji.com"
+  type    = "CNAME"
+  content = "sites.ludicrous.cloud"
+  proxied = false
+  ttl     = 60
+}
+
 # ── budget-bee.app subdomains ──
 resource "cloudflare_dns_record" "api_budget_bee_app" {
   zone_id = data.cloudflare_zone.budget_bee_app.id
