@@ -44,19 +44,19 @@
     "cerebras": {
       "keys": [
         {
-          "name": "cerebras-gpt-key",
+          "name": "cerebras-key-01",
           "value": "env.CEREBRAS_API_KEY_01",
           "models": ["*"],
           "weight": 1.0
         },
         {
-          "name": "cerebras-gpt-key",
+          "name": "cerebras-key-02",
           "value": "env.CEREBRAS_API_KEY_02",
           "models": ["*"],
           "weight": 1.0
         },
         {
-          "name": "cerebras-gpt-key",
+          "name": "cerebras-key-03",
           "value": "env.CEREBRAS_API_KEY_03",
           "models": ["*"],
           "weight": 1.0
@@ -93,83 +93,5 @@
         }
       ]
     }
-  },
-  "mcp": {
-    "client_configs": [
-      {
-        "name": "Calendar",
-        "connection_type": "http",
-        "connection_string": "https://calendarmcp.googleapis.com/mcp/v1",
-        "tools_to_execute": ["*"],
-        "tool_sync_interval": "-1s",
-        "auth_type": "oauth",
-        "auth_config": {
-          "client_id": "env.BIFROST_GOOGLE_CLIENT_ID",
-          "client_secret": "env.BIFROST_GOOGLE_CLIENT_SECRET",
-          "authorize_url": "https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&prompt=consent"
-        }
-      },
-      {
-        "name": "Gmail",
-        "connection_type": "http",
-        "connection_string": "https://gmailmcp.googleapis.com/mcp/v1",
-        "tools_to_execute": ["*"],
-        "tool_sync_interval": "-1s",
-        "auth_type": "per_user_oauth",
-        "auth_config": {
-          "client_id": "env.BIFROST_GOOGLE_CLIENT_ID",
-          "client_secret": "env.BIFROST_GOOGLE_CLIENT_SECRET",
-          "authorize_url": "https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&prompt=consent"
-        }
-      },
-      {
-        "name": "Slack",
-        "connection_type": "http",
-        "connection_string": "https://mcp.slack.com/mcp",
-        "tools_to_execute": ["*"],
-        "tool_sync_interval": "-1s",
-        "auth_type": "oauth",
-        "auth_config": {
-          "client_id": "env.BIFROST_SLACK_CLIENT_ID",
-          "client_secret": "env.BIFROST_SLACK_CLIENT_SECRET"
-        }
-      },
-      {
-        "name": "GitHub",
-        "connection_type": "http",
-        "connection_string": "https://api.githubcopilot.com/mcp",
-        "tools_to_execute": ["*"],
-        "tool_sync_interval": "-1s",
-        "auth_type": "oauth",
-        "auth_config": {
-          "client_id": "env.BIFROST_GITHUB_CLIENT_ID",
-          "client_secret": "env.BIFROST_GITHUB_CLIENT_SECRET"
-        }
-      },
-      {
-        "name": "n8n",
-        "connection_type": "http",
-        "connection_string": "https://n8n.sammaji.com/mcp-server/http",
-        "tools_to_execute": ["*"],
-        "tool_sync_interval": "-1s",
-        "auth_type": "oauth"
-      },
-      {
-        "name": "Notion",
-        "connection_type": "http",
-        "connection_string": "https://mcp.notion.com/mcp",
-        "tools_to_execute": ["*"],
-        "tool_sync_interval": "-1s",
-        "auth_type": "oauth"
-      },
-      {
-        "name": "Linear",
-        "connection_type": "http",
-        "connection_string": "https://mcp.linear.app/mcp",
-        "tools_to_execute": ["*"],
-        "tool_sync_interval": "-1s",
-        "auth_type": "oauth"
-      }
-    ]
   }
 }
