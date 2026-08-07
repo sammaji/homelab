@@ -38,134 +38,27 @@
       "admin_password": "env.BIFROST_ADMIN_PASSWORD",
       "is_enabled": true,
       "disable_auth_on_inference": true
-    },
-    "routing_rules": [
-      {
-        "id": "gemini-pro",
-        "name": "gemini-pro",
-        "enabled": true,
-        "cel_expression": "model == 'gemini-pro'",
-        "targets": [
-          {
-            "provider": "gemini",
-            "model": "gemini-3.1-pro",
-            "weight": 0.5
-          },
-          {
-            "provider": "gemini",
-            "model": "gemini-2.5-pro",
-            "weight": 0.5
-          }
-        ],
-        "scope": "global",
-        "priority": 1
-      },
-      {
-        "id": "gemini-flash",
-        "name": "gemini-flash",
-        "enabled": true,
-        "cel_expression": "model == 'gemini-flash'",
-        "targets": [
-          {
-            "provider": "gemini",
-            "model": "gemini-3.5-flash",
-            "weight": 0.17
-          },
-          {
-            "provider": "gemini",
-            "model": "gemini-3.1-flash-lite",
-            "weight": 0.25
-          },
-          {
-            "provider": "gemini",
-            "model": "gemini-3-flash-preview",
-            "weight": 0.17
-          },
-          {
-            "provider": "gemini",
-            "model": "gemini-2.5-flash",
-            "weight": 0.16
-          },
-          {
-            "provider": "gemini",
-            "model": "gemini-2.5-flash-lite",
-            "weight": 0.25
-          }
-        ],
-        "scope": "global",
-        "priority": 2
-      },
-      {
-        "id": "gemini-3-flash",
-        "name": "gemini-3-flash",
-        "enabled": true,
-        "cel_expression": "model == 'gemini-3-flash'",
-        "targets": [
-          {
-            "provider": "gemini",
-            "model": "gemini-3.5-flash",
-            "weight": 0.287
-          },
-          {
-            "provider": "gemini",
-            "model": "gemini-3.1-flash-lite",
-            "weight": 0.426
-          },
-          {
-            "provider": "gemini",
-            "model": "gemini-3-flash-preview",
-            "weight": 0.287
-          }
-        ],
-        "scope": "global",
-        "priority": 3
-      },
-      {
-        "id": "gpt-oss-120b",
-        "name": "gpt-oss-120b",
-        "enabled": true,
-        "cel_expression": "model == 'gpt-oss-120b'",
-        "targets": [
-          {
-            "provider": "openrouter",
-            "model": "openai/gpt-oss-120b:free",
-            "weight": 0.4
-          },
-          { "provider": "groq", "model": "openai/gpt-oss-120b", "weight": 0.3 },
-          {
-            "provider": "cerebras",
-            "model": "openai/gpt-oss-120b",
-            "weight": 0.3
-          }
-        ],
-        "scope": "global",
-        "priority": 4
-      },
-      {
-        "id": "gpt-oss-20b",
-        "name": "gpt-oss-20b",
-        "enabled": true,
-        "cel_expression": "model == 'gpt-oss-20b'",
-        "targets": [
-          {
-            "provider": "openrouter",
-            "model": "openai/gpt-oss-20b:free",
-            "weight": 0.5
-          },
-          { "provider": "groq", "model": "openai/gpt-oss-20b", "weight": 0.5 }
-        ],
-        "scope": "global",
-        "priority": 5
-      }
-    ]
+    }
   },
   "providers": {
     "cerebras": {
       "keys": [
         {
           "name": "cerebras-gpt-key",
-          "value": "env.CEREBRAS_API_KEY",
-          "models": ["openai/gpt-oss-120b"],
+          "value": "env.CEREBRAS_API_KEY_01",
+          "models": ["*"],
+          "weight": 1.0
+        },
+        {
+          "name": "cerebras-gpt-key",
+          "value": "env.CEREBRAS_API_KEY_02",
+          "models": ["*"],
+          "weight": 1.0
+        },
+        {
+          "name": "cerebras-gpt-key",
+          "value": "env.CEREBRAS_API_KEY_03",
+          "models": ["*"],
           "weight": 1.0
         }
       ]
@@ -175,54 +68,7 @@
         {
           "name": "deepseek-key",
           "value": "env.DEEPSEEK_API_KEY",
-          "models": ["deepseek/deepseek-v4-flash", "deepseek/deepseek-v4-pro"],
-          "weight": 1.0
-        }
-      ]
-    },
-    "gemini": {
-      "keys": [
-        {
-          "name": "gemini-key-01",
-          "value": "env.GEMINI_API_KEY_01",
-          "models": [
-            "gemini-3.5-flash",
-            "gemini-3.1-pro",
-            "gemini-3.1-flash-lite",
-            "gemini-3-flash-preview",
-            "gemini-2.5-pro",
-            "gemini-2.5-flash",
-            "gemini-2.5-flash-lite"
-          ],
-          "weight": 1.0,
-          "enabled": false
-        },
-        {
-          "name": "gemini-key-02",
-          "value": "env.GEMINI_API_KEY_02",
-          "models": [
-            "gemini-3.5-flash",
-            "gemini-3.1-pro",
-            "gemini-3.1-flash-lite",
-            "gemini-3-flash-preview",
-            "gemini-2.5-pro",
-            "gemini-2.5-flash",
-            "gemini-2.5-flash-lite"
-          ],
-          "weight": 1.0
-        },
-        {
-          "name": "gemini-key-03",
-          "value": "env.GEMINI_API_KEY_03",
-          "models": [
-            "gemini-3.5-flash",
-            "gemini-3.1-pro",
-            "gemini-3.1-flash-lite",
-            "gemini-3-flash-preview",
-            "gemini-2.5-pro",
-            "gemini-2.5-flash",
-            "gemini-2.5-flash-lite"
-          ],
+          "models": ["*"],
           "weight": 1.0
         }
       ]
@@ -232,7 +78,7 @@
         {
           "name": "groq-gpt-key",
           "value": "env.GROQ_API_KEY",
-          "models": ["openai/gpt-oss-120b", "openai/gpt-oss-20b"],
+          "models": ["*"],
           "weight": 1.0
         }
       ]
@@ -242,18 +88,88 @@
         {
           "name": "openrouter-key",
           "value": "env.OPENROUTER_API_KEY",
-          "models": [
-            "openai/gpt-oss-120b:free",
-            "openai/gpt-oss-20b:free",
-            "tencent/hy3:free",
-            "nvidia/nemotron-3-ultra-550b-a55b:free",
-            "poolside/laguna-xs-2.1:free",
-            "poolside/laguna-m.1:free",
-            "cohere/north-mini-code:free"
-          ],
+          "models": ["*"],
           "weight": 1.0
         }
       ]
     }
+  },
+  "mcp": {
+    "client_configs": [
+      {
+        "name": "Calendar",
+        "connection_type": "http",
+        "connection_string": "https://calendarmcp.googleapis.com/mcp/v1",
+        "tools_to_execute": ["*"],
+        "tool_sync_interval": "-1s",
+        "auth_type": "oauth",
+        "auth_config": {
+          "client_id": "env.BIFROST_GOOGLE_CLIENT_ID",
+          "client_secret": "env.BIFROST_GOOGLE_CLIENT_SECRET",
+          "authorize_url": "https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&prompt=consent"
+        }
+      },
+      {
+        "name": "Gmail",
+        "connection_type": "http",
+        "connection_string": "https://gmailmcp.googleapis.com/mcp/v1",
+        "tools_to_execute": ["*"],
+        "tool_sync_interval": "-1s",
+        "auth_type": "per_user_oauth",
+        "auth_config": {
+          "client_id": "env.BIFROST_GOOGLE_CLIENT_ID",
+          "client_secret": "env.BIFROST_GOOGLE_CLIENT_SECRET",
+          "authorize_url": "https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&prompt=consent"
+        }
+      },
+      {
+        "name": "Slack",
+        "connection_type": "http",
+        "connection_string": "https://mcp.slack.com/mcp",
+        "tools_to_execute": ["*"],
+        "tool_sync_interval": "-1s",
+        "auth_type": "oauth",
+        "auth_config": {
+          "client_id": "env.BIFROST_SLACK_CLIENT_ID",
+          "client_secret": "env.BIFROST_SLACK_CLIENT_SECRET"
+        }
+      },
+      {
+        "name": "GitHub",
+        "connection_type": "http",
+        "connection_string": "https://api.githubcopilot.com/mcp",
+        "tools_to_execute": ["*"],
+        "tool_sync_interval": "-1s",
+        "auth_type": "oauth",
+        "auth_config": {
+          "client_id": "env.BIFROST_GITHUB_CLIENT_ID",
+          "client_secret": "env.BIFROST_GITHUB_CLIENT_SECRET"
+        }
+      },
+      {
+        "name": "n8n",
+        "connection_type": "http",
+        "connection_string": "https://n8n.sammaji.com/mcp-server/http",
+        "tools_to_execute": ["*"],
+        "tool_sync_interval": "-1s",
+        "auth_type": "oauth"
+      },
+      {
+        "name": "Notion",
+        "connection_type": "http",
+        "connection_string": "https://mcp.notion.com/mcp",
+        "tools_to_execute": ["*"],
+        "tool_sync_interval": "-1s",
+        "auth_type": "oauth"
+      },
+      {
+        "name": "Linear",
+        "connection_type": "http",
+        "connection_string": "https://mcp.linear.app/mcp",
+        "tools_to_execute": ["*"],
+        "tool_sync_interval": "-1s",
+        "auth_type": "oauth"
+      }
+    ]
   }
 }

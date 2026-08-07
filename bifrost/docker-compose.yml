@@ -18,7 +18,7 @@ services:
       - bifrost-net
 
   bifrost:
-    image: maximhq/bifrost:v1.6.6
+    image: maximhq/bifrost:v2.0.0-prerelease2
     container_name: hlab-bifrost
     restart: unless-stopped
     environment:
@@ -34,7 +34,15 @@ services:
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:?environment variable DEEPSEEK_API_KEY is not set.}
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:?environment variable OPENROUTER_API_KEY is not set.}
       GROQ_API_KEY: ${GROQ_API_KEY:?environment variable GROQ_API_KEY is not set.}
-      CEREBRAS_API_KEY: ${CEREBRAS_API_KEY:?environment variable CEREBRAS_API_KEY is not set.}
+      CEREBRAS_API_KEY_01: ${CEREBRAS_API_KEY_01:?environment variable CEREBRAS_API_KEY_01 is not set.}
+      CEREBRAS_API_KEY_02: ${CEREBRAS_API_KEY_02:?environment variable CEREBRAS_API_KEY_02 is not set.}
+      CEREBRAS_API_KEY_03: ${CEREBRAS_API_KEY_03:?environment variable CEREBRAS_API_KEY_03 is not set.}
+      BIFROST_GOOGLE_CLIENT_ID: ${BIFROST_GOOGLE_CLIENT_ID:?environment variable BIFROST_GOOGLE_CLIENT_ID is not set.}
+      BIFROST_GOOGLE_CLIENT_SECRET: ${BIFROST_GOOGLE_CLIENT_SECRET:?environment variable BIFROST_GOOGLE_CLIENT_SECRET is not set.}
+      BIFROST_SLACK_CLIENT_ID: ${BIFROST_SLACK_CLIENT_ID:?environment variable BIFROST_SLACK_CLIENT_ID is not set.}
+      BIFROST_SLACK_CLIENT_SECRET: ${BIFROST_SLACK_CLIENT_SECRET:?environment variable BIFROST_SLACK_CLIENT_SECRET is not set.}
+      BIFROST_GITHUB_CLIENT_ID: ${BIFROST_GITHUB_CLIENT_ID:?environment variable BIFROST_GITHUB_CLIENT_ID is not set.}
+      BIFROST_GITHUB_CLIENT_SECRET: ${BIFROST_GITHUB_CLIENT_SECRET:?environment variable BIFROST_GITHUB_CLIENT_SECRET is not set.}
     depends_on:
       bifrost-postgres:
         condition: service_healthy
