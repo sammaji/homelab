@@ -1,0 +1,62 @@
+services:
+  listmonk-postgres:
+    image: postgres:18-alpine
+    container_name: hlab-listmonk-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${LISTMONK_POSTGRES_DATABASE:?environment variable LISTMONK_POSTGRES_DATABASE is not set.}
+      POSTGRES_USER: ${LISTMONK_POSTGRES_USER:?environment variable LISTMONK_POSTGRES_USER is not set.}
+      POSTGRES_PASSWORD: ${LISTMONK_POSTGRES_PASSWORD:?environment variable LISTMONK_POSTGRES_PASSWORD is not set.}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - listmonk-postgres-data:/var/lib/postgresql
+    networks:
+      - listmonk-net
+
+  listmonk:
+    image: listmonk/listmonk:latest
+    container_name: hlab-listmonk
+    restart: unless-stopped
+    hostname: ${LISTMONK_HOSTNAME:-listmonk.sammaji.com}
+    # --install --idempotent is a no-op after the first run; --upgrade applies any
+    # pending DB migrations on every start. --config '' forces env-var-only config.
+    command: [sh, -c, "./listmonk --install --idempotent --yes --config '' && ./listmonk --upgrade --yes --config '' && ./listmonk --config ''"]
+    environment:
+      LISTMONK_app__address: 0.0.0.0:9000
+      LISTMONK_db__host: listmonk-postgres
+      LISTMONK_db__port: 5432
+      LISTMONK_db__database: ${LISTMONK_POSTGRES_DATABASE:?environment variable LISTMONK_POSTGRES_DATABASE is not set.}
+      LISTMONK_db__user: ${LISTMONK_POSTGRES_USER:?environment variable LISTMONK_POSTGRES_USER is not set.}
+      LISTMONK_db__password: ${LISTMONK_POSTGRES_PASSWORD:?environment variable LISTMONK_POSTGRES_PASSWORD is not set.}
+      LISTMONK_db__ssl_mode: disable
+      LISTMONK_db__max_open: 25
+      LISTMONK_db__max_idle: 25
+      LISTMONK_db__max_lifetime: 300s
+      # Bootstraps the Super Admin on first run only; ignored on subsequent starts.
+      LISTMONK_ADMIN_USER: ${LISTMONK_ADMIN_USER:?environment variable LISTMONK_ADMIN_USER is not set.}
+      LISTMONK_ADMIN_PASSWORD: ${LISTMONK_ADMIN_PASSWORD:?environment variable LISTMONK_ADMIN_PASSWORD is not set.}
+      TZ: Asia/Kolkata
+    depends_on:
+      listmonk-postgres:
+        condition: service_healthy
+    ports:
+      - 5655:9000
+    volumes:
+      - listmonk-uploads:/listmonk/uploads
+    networks:
+      - listmonk-net
+
+volumes:
+  listmonk-postgres-data:
+    name: hlab-listmonk-postgres-data
+  listmonk-uploads:
+    name: hlab-listmonk-uploads
+
+networks:
+  listmonk-net:
+    name: hlab-listmonk-net
+    driver: bridge

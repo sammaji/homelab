@@ -21,4 +21,5 @@ Always keep a buffer of at least 5-10 ports open between services. 20 if your se
 | 5625 | 8080 | bifrost | Bifrost UI & API |
 | 5640 | 5678 | n8n | n8n UI & API (webhooks) |
 | 5650 | 80 | zulip | Zulip chat UI & API |
+| 5655 | 9000 | listmonk | Listmonk UI & API |
 
