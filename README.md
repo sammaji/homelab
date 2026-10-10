@@ -37,8 +37,8 @@ See [`PORTS.md`](PORTS.md) for the full host port registry. Rule: keep a 5–10 
 
 `.env` at the repo root is the single source of secrets. `scripts/create_symlinks.sh` symlinks each stack's `.env` to it (skips `nginx`, `terraform`), so there is one file to edit.
 
-- **Local**: docker-compose reads `.env` directly.
-- **Production**: set `USE_INFISICAL=1` so the Makefile wraps every `docker-compose` call with `infisical run --env=prod --`, injecting secrets from Infisical instead of `.env`.
+- **Local**: docker compose reads `.env` directly.
+- **Production**: set `USE_INFISICAL=1` so the Makefile wraps every `docker compose` call with `infisical run --env=prod --`, injecting secrets from Infisical instead of `.env`.
 
 The `infisical` stack itself always reads `.env` directly — it *is* the secret store, so it can't depend on itself.
 
@@ -56,8 +56,8 @@ $EDITOR .env       # Fill in secrets
 Pattern rules work for any stack folder (`infisical`, `bifrost`, `monitoring`):
 
 ```bash
-make <stack>-up        # docker-compose up -d
-make <stack>-down      # docker-compose down
+make <stack>-up        # docker compose up -d
+make <stack>-down      # docker compose down
 make <stack>-ps        # list containers
 make <stack>-logs      # stream logs
 make <stack>-restart   # restart

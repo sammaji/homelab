@@ -1,7 +1,7 @@
 services:
   # ── Infisical ──
   infisical:
-    image: infisical/infisical:latest-postgres
+    image: infisical/infisical:v0.166.3
     container_name: hlab-infisical
     restart: unless-stopped
     depends_on:
