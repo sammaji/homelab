@@ -44,7 +44,7 @@ services:
       listmonk-postgres:
         condition: service_healthy
     ports:
-      - 5655:9000
+      - 5055:9000
     volumes:
       - listmonk-uploads:/listmonk/uploads
     networks:

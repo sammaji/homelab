@@ -1,14 +1,11 @@
 locals {
   sammaji_subdomains = toset([
     "bifrost",
-    "dostack",
     "grafana",
     "infisical",
-    "medatlas",
+    "listmonk",
     "n8n",
     "nocodb",
-    "paytrack",
-    "zulip",
   ])
 
   watchthat_site_subdomains = toset([
@@ -37,21 +34,20 @@ resource "cloudflare_dns_record" "sammaji_com" {
   ttl     = 60
 }
 
+resource "cloudflare_dns_record" "mkdp_sammaji_com" {
+  zone_id = data.cloudflare_zone.sammaji_com.id
+  name    = "mkdp.sammaji.com"
+  type    = "CNAME"
+  content = "2af578d901f7c9d8.vercel-dns-017.com."
+  proxied = false
+  ttl     = 60
+}
+
 resource "cloudflare_dns_record" "scp_sammaji_com" {
   zone_id = data.cloudflare_zone.sammaji_com.id
   name    = "scp.sammaji.com"
   type    = "CNAME"
   content = "e548a925ca8fd88a.vercel-dns-017.com"
-  proxied = false
-  ttl     = 60
-}
-
-# GoHighLevel custom domain (funnel testing)
-resource "cloudflare_dns_record" "ghl_sammaji_com" {
-  zone_id = data.cloudflare_zone.sammaji_com.id
-  name    = "ghl.sammaji.com"
-  type    = "CNAME"
-  content = "sites.ludicrous.cloud"
   proxied = false
   ttl     = 60
 }

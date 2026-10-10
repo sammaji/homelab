@@ -16,9 +16,12 @@ else
   INFISICAL_RUN :=
 endif
 
-.PHONY: help init nginx-link nginx-apply \
-        infisical-up infisical-down infisical-ps infisical-logs infisical-restart \
-        zulip-init zulip-register-push
+.PHONY: help init nginx-link nginx-apply ufw-apply tailnet-hosts \
+        infisical-up infisical-down infisical-ps infisical-logs infisical-restart
+
+# Domains restricted to tailnet-only access (see nginx/snippets/tailnet-only.conf).
+# Keep in sync with which vhosts include that snippet.
+TAILNET_DOMAINS := grafana.sammaji.com infisical.sammaji.com
 
 
 # ── Pattern rules ──
@@ -53,17 +56,6 @@ infisical-logs:
 
 infisical-restart:
 	cd infisical && docker-compose restart
-
-
-# ── Zulip (one-time DB/config bootstrap, required before the first zulip-up) ──
-zulip-init:
-	cd zulip && $(INFISICAL_RUN) docker-compose run --rm zulip app:init
-
-# Registers this server with Zulip's Mobile Push Notification Service (interactive:
-# prints what will be sent and asks you to accept their ToS). Run once after zulip-up,
-# and again any time SETTING_EXTERNAL_HOST or SETTING_ZULIP_ADMINISTRATOR change.
-zulip-register-push:
-	cd zulip && $(INFISICAL_RUN) docker-compose exec zulip app:managepy register_server
 
 
 # ── Init ──
@@ -104,6 +96,17 @@ nginx-apply:
 	echo "nginx restarted."
 
 
+# ── Tailscale / firewall (run on the VPS; requires 'tailscale up' first) ──
+ufw-apply:
+	@./scripts/setup-ufw.sh
+
+
+# ── Tailnet-only DNS override (run on client devices, not the VPS) ──
+tailnet-hosts:
+	@test -n "$(TAILSCALE_VPS_IP)" || { echo "Usage: make tailnet-hosts TAILSCALE_VPS_IP=100.x.x.x"; exit 1; }
+	@./scripts/tailnet-hosts.sh $(TAILSCALE_VPS_IP) $(TAILNET_DOMAINS)
+
+
 # ── Help ──
 help:
 	@echo "Usage: [USE_INFISICAL=1] [INFISICAL_ENV=prod] make <target>"
@@ -119,6 +122,10 @@ help:
 	@echo "  make nginx-link       - Backup /etc/nginx/sites-available and deploy nginx/ configs"
 	@echo "  make nginx-apply      - Test nginx config; if ok, restart nginx"
 	@echo ""
+	@echo "Tailscale / firewall:"
+	@echo "  make ufw-apply                              - (on VPS) Apply the ufw baseline: 22/80/443 public, rest tailnet-only"
+	@echo "  make tailnet-hosts TAILSCALE_VPS_IP=100.x.x.x - (on client devices) Map tailnet-only domains to the VPS's Tailscale IP in /etc/hosts"
+	@echo ""
 	@echo "Pattern rules (replace <stack> with folder name, e.g. monitoring):"
 	@echo "  make <stack>-up       - Start stack (uses Infisical if USE_INFISICAL=1)"
 	@echo "  make <stack>-down     - Stop stack"
@@ -128,7 +135,3 @@ help:
 	@echo ""
 	@echo "Infisical stack (always uses .env, never Infisical CLI):"
 	@echo "  make infisical-up / down / ps / logs / restart"
-	@echo ""
-	@echo "Zulip:"
-	@echo "  make zulip-init            - One-time DB/config bootstrap; run once before the first zulip-up"
-	@echo "  make zulip-register-push  - Register server for mobile push notifications (interactive)"

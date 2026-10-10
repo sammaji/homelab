@@ -33,6 +33,7 @@ services:
       N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY:?environment variable N8N_ENCRYPTION_KEY is not set.}
       N8N_HOST: ${N8N_HOST:-localhost}
       N8N_PORT: 5678
+      N8N_EDITOR_BASE_URL: ${N8N_EDITOR_BASE_URL:-}
       N8N_PROTOCOL: https
       N8N_PROXY_HOPS: ${N8N_PROXY_HOPS:-1}
       WEBHOOK_URL: ${N8N_WEBHOOK_URL:-}
@@ -47,7 +48,7 @@ services:
       n8n-postgres:
         condition: service_healthy
     ports:
-      - 5640:5678
+      - 5040:5678
     volumes:
       - n8n-data:/home/node/.n8n
     healthcheck:
