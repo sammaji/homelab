@@ -38,7 +38,7 @@ resource "cloudflare_dns_record" "mkdp_sammaji_com" {
   zone_id = data.cloudflare_zone.sammaji_com.id
   name    = "mkdp.sammaji.com"
   type    = "CNAME"
-  content = "2af578d901f7c9d8.vercel-dns-017.com."
+  content = "2af578d901f7c9d8.vercel-dns-017.com"
   proxied = false
   ttl     = 60
 }
