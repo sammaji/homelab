@@ -1,0 +1,15 @@
+tenancy_ocid       = "ocid1.tenancy.oc1..aaaa..."
+region             = "ap-mumbai-1" # must be your home region
+budget_alert_email = "you@example.com"
+
+# Override only if needed
+# compartment_ocid          = "ocid1.compartment.oc1..aaaa..."  # defaults to tenancy root
+# oci_config_profile        = "DEFAULT"
+# availability_domain_index = 0         # bump if you get "Out of host capacity"
+# ssh_public_key_path       = "~/.ssh/id_ed25519.pub"
+# ssh_allowed_cidrs         = ["203.0.113.4/32"]
+# public_tcp_ports          = [80, 443]
+# instances                 = { prod = { public_web = true }, hlab = { public_web = false } }
+# ocpus_per_instance        = 1
+# memory_gb_per_instance    = 6
+# boot_volume_gb            = 100
