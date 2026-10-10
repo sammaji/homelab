@@ -10,7 +10,7 @@ services:
       redis:
         condition: service_started
     ports:
-      - "5620:8080"
+      - "5020:8080"
     environment:
       NODE_ENV: production
       ENCRYPTION_KEY: ${INFISICAL_ENCRYPTION_KEY:?INFISICAL_ENCRYPTION_KEY is not set}

@@ -1,5 +1,6 @@
 {
   "$schema": "https://www.getbifrost.ai/schema",
+  "version": 2,
   "config_store": {
     "enabled": true,
     "type": "postgres",
@@ -29,40 +30,18 @@
     "allowed_headers": ["*"],
     "allow_per_request_raw_override": true,
     "allow_per_request_content_storage_override": true,
-    "enforce_auth_on_inference": true
+    "enforce_auth_on_inference": true,
+    "mcp_external_client_url": "https://bifrost.sammaji.com"
   },
   "encryption_key": "env.BIFROST_ENCRYPTION_KEY",
   "governance": {
     "auth_config": {
       "admin_username": "env.BIFROST_ADMIN_USERNAME",
       "admin_password": "env.BIFROST_ADMIN_PASSWORD",
-      "is_enabled": true,
-      "disable_auth_on_inference": true
+      "is_enabled": true
     }
   },
   "providers": {
-    "cerebras": {
-      "keys": [
-        {
-          "name": "cerebras-key-01",
-          "value": "env.CEREBRAS_API_KEY_01",
-          "models": ["*"],
-          "weight": 1.0
-        },
-        {
-          "name": "cerebras-key-02",
-          "value": "env.CEREBRAS_API_KEY_02",
-          "models": ["*"],
-          "weight": 1.0
-        },
-        {
-          "name": "cerebras-key-03",
-          "value": "env.CEREBRAS_API_KEY_03",
-          "models": ["*"],
-          "weight": 1.0
-        }
-      ]
-    },
     "deepseek": {
       "keys": [
         {
@@ -93,5 +72,41 @@
         }
       ]
     }
+  },
+  "mcp": {
+    "client_configs": [
+      {
+        "name": "github",
+        "endpoint_slug": "github",
+        "connection_type": "http",
+        "connection_string": "https://api.githubcopilot.com/mcp/",
+        "auth_type": "oauth",
+        "oauth_config": {
+          "client_id": "env.BIFROST_GITHUB_CLIENT_ID",
+          "client_secret": "env.BIFROST_GITHUB_CLIENT_SECRET",
+          "scopes": ["repo", "read:org", "read:user"]
+        },
+        "tools_to_execute": ["*"],
+        "allow_by_default": true
+      },
+      {
+        "name": "notion",
+        "endpoint_slug": "notion",
+        "connection_type": "http",
+        "connection_string": "https://mcp.notion.com/mcp",
+        "auth_type": "oauth",
+        "tools_to_execute": ["*"],
+        "allow_by_default": true
+      },
+      {
+        "name": "linear",
+        "endpoint_slug": "linear",
+        "connection_type": "http",
+        "connection_string": "https://mcp.linear.app/mcp",
+        "auth_type": "oauth",
+        "tools_to_execute": ["*"],
+        "allow_by_default": true
+      }
+    ]
   }
 }

@@ -1,25 +1,39 @@
 # Ports
 
-All ports are ordered by `Host Port` for public ports.
+Host port registry for **`oracle-vm-hlab`**, the only host this repo's stacks
+run on.
 
-Always keep a buffer of at least 5-10 ports open between services. 20 if your service is large. For example, `monitoring` stack takes ports 5600-5619 (20 ports). Infisical takes 5620-5624 (5 ports), etc.
+Host ports start at **5000**. Each stack gets a block and keeps a buffer for
+future containers: at least 5-10 ports, 20 for large stacks. Containers are
+reached through nginx or directly over the tailnet. Nothing here is opened
+publicly.
+
+## Allocations
+
+| Block | Stack |
+|-------|-------|
+| 5000-5019 | `monitoring` |
+| 5020-5024 | `infisical` |
+| 5025-5039 | `bifrost` |
+| 5040-5054 | `n8n` |
+| 5055-5069 | `listmonk` |
+| 5070+ | free (next stack starts here) |
+
+## Ports
 
 | Host Port | Container Port | Service | Description |
 |-----------|---------------|---------|-------------|
-| 5200 | 3000 | watchthatsite-proxy | Watchthatsite Proxy |
-| 5201 | 8080 | watchthatsite-bifrost | Watchthatsite Bifrost |
-| 5600 | 3000 | grafana | Grafana UI |
-| 5600 | 3000 | grafana | Grafana UI |
-| 5601 | 9090 | prometheus | Prometheus UI |
-| 5602 | 3200 | tempo | Tempo HTTP API |
-| 5603 | 4317 | otel-collector | OTLP gRPC receiver |
-| 5604 | 4318 | otel-collector | OTLP HTTP receiver |
-| 5605 | 8888 | otel-collector | OTLP Internal metrics |
-| 5606 | 9464 | otel-collector | Prometheus exporter |
-| 5607 | 13133 | otel-collector | OTLP Health check |
-| 5620 | 8080 | infisical | Infisical UI & API |
-| 5625 | 8080 | bifrost | Bifrost UI & API |
-| 5640 | 5678 | n8n | n8n UI & API (webhooks) |
-| 5650 | 80 | zulip | Zulip chat UI & API |
-| 5655 | 9000 | listmonk | Listmonk UI & API |
-
+| 5000 | 3000 | grafana | Grafana UI |
+| 5001 | 9090 | prometheus | Prometheus UI |
+| 5002 | 3200 | tempo | Tempo HTTP API |
+| 5003 | 4317 | otel-collector | OTLP gRPC receiver |
+| 5004 | 4318 | otel-collector | OTLP HTTP receiver |
+| 5005 | 8888 | otel-collector | OTel Collector internal metrics |
+| 5006 | 9464 | otel-collector | Prometheus exporter |
+| 5007 | 13133 | otel-collector | Health check |
+| 5008 | 9095 | tempo | Tempo gRPC |
+| 5009 | 3100 | loki | Loki HTTP API |
+| 5020 | 8080 | infisical | Infisical UI & API |
+| 5025 | 8080 | bifrost | Bifrost UI & API |
+| 5040 | 5678 | n8n | n8n UI & API (webhooks) |
+| 5055 | 9000 | listmonk | Listmonk UI & API |
