@@ -1,0 +1,47 @@
+services:
+  calendar-mcp:
+    build: https://github.com/nspady/google-calendar-mcp.git#v2.7.0
+    image: hlab-google-calendar-mcp:v2.7.0
+    pull_policy: never
+    container_name: hlab-google-calendar
+    restart: unless-stopped
+    environment:
+      TRANSPORT: http
+      HOST: 0.0.0.0
+      PORT: 3000
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:?environment variable GOOGLE_CLIENT_ID is not set.}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:?environment variable GOOGLE_CLIENT_SECRET is not set.}
+      GOOGLE_OAUTH_CREDENTIALS: /tmp/gcp-oauth.keys.json
+      TZ: Asia/Kolkata
+    entrypoint:
+      - /bin/sh
+      - -c
+      - >-
+        node -e 'require("fs").writeFileSync(process.env.GOOGLE_OAUTH_CREDENTIALS,
+        JSON.stringify({client_id: process.env.GOOGLE_CLIENT_ID, client_secret: process.env.GOOGLE_CLIENT_SECRET}),
+        {mode: 0o600})' && exec "$$@"
+      - --
+    command: ["node", "build/index.js"]
+    volumes:
+      # tokens.json: access + refresh token, rewritten on every refresh.
+      - calendar-tokens:/home/nodejs/.config/google-calendar-mcp
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks:
+      - bifrost-net
+
+volumes:
+  calendar-tokens:
+    name: hlab-google-calendar-tokens
+
+networks:
+  bifrost-net:
+    name: hlab-bifrost-net
+    external: true
