@@ -106,6 +106,15 @@
         "auth_type": "oauth",
         "tools_to_execute": ["*"],
         "allow_by_default": true
+      },
+      {
+        "name": "google_calendar",
+        "endpoint_slug": "google-calendar",
+        "connection_type": "http",
+        "connection_string": "http://hlab-google-calendar:3000/mcp",
+        "auth_type": "none",
+        "tools_to_execute": ["*"],
+        "allow_by_default": true
       }
     ]
   }
