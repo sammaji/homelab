@@ -31,7 +31,8 @@
     "allow_per_request_raw_override": true,
     "allow_per_request_content_storage_override": true,
     "enforce_auth_on_inference": true,
-    "mcp_external_client_url": "https://bifrost.sammaji.com"
+    "mcp_external_client_url": "https://bifrost.sammaji.com",
+    "hidden_request_types": ["list_models"]
   },
   "encryption_key": "env.BIFROST_ENCRYPTION_KEY",
   "governance": {
@@ -39,7 +40,68 @@
       "admin_username": "env.BIFROST_ADMIN_USERNAME",
       "admin_password": "env.BIFROST_ADMIN_PASSWORD",
       "is_enabled": true
-    }
+    },
+    "virtual_keys": [
+      {
+        "id": "ec4703d5-b1dc-4422-b664-92e2dbd2fbf3",
+        "name": "hermes",
+        "mcp_configs": [
+          { "mcp_client_name": "github", "tools_to_execute": ["*"] },
+          { "mcp_client_name": "notion", "tools_to_execute": ["*"] },
+          {
+            "mcp_client_name": "linear",
+            "tools_to_execute": [
+              "extract_images",
+              "get_agent_skill",
+              "get_attachment",
+              "get_diff",
+              "get_diff_threads",
+              "get_document",
+              "get_initiative",
+              "get_issue",
+              "get_issue_status",
+              "get_milestone",
+              "get_notifications",
+              "get_project",
+              "get_release",
+              "get_release_note",
+              "get_status_updates",
+              "get_team",
+              "get_template",
+              "get_triage_responsibility",
+              "get_user",
+              "get_workspace",
+              "list_agent_skills",
+              "list_comments",
+              "list_custom_views",
+              "list_customer_needs",
+              "list_customers",
+              "list_cycles",
+              "list_diffs",
+              "list_documents",
+              "list_initiative_labels",
+              "list_initiatives",
+              "list_issue_labels",
+              "list_issue_statuses",
+              "list_issues",
+              "list_milestones",
+              "list_project_labels",
+              "list_projects",
+              "list_release_notes",
+              "list_release_pipelines",
+              "list_releases",
+              "list_teams",
+              "list_templates",
+              "list_users",
+              "search_documentation"
+            ]
+          },
+          { "mcp_client_name": "google_calendar", "tools_to_execute": ["*"] },
+          { "mcp_client_name": "firecrawl", "tools_to_execute": ["*"] },
+          { "mcp_client_name": "slack", "tools_to_execute": ["*"] }
+        ]
+      }
+    ]
   },
   "providers": {
     "deepseek": {
@@ -87,7 +149,8 @@
           "scopes": ["repo", "read:org", "read:user"]
         },
         "tools_to_execute": ["*"],
-        "allow_by_default": true
+        "allow_by_default": false,
+        "needs_session_stickiness": true
       },
       {
         "name": "notion",
@@ -96,7 +159,8 @@
         "connection_string": "https://mcp.notion.com/mcp",
         "auth_type": "oauth",
         "tools_to_execute": ["*"],
-        "allow_by_default": true
+        "allow_by_default": false,
+        "needs_session_stickiness": true
       },
       {
         "name": "linear",
@@ -105,7 +169,72 @@
         "connection_string": "https://mcp.linear.app/mcp",
         "auth_type": "oauth",
         "tools_to_execute": ["*"],
-        "allow_by_default": true
+        "allow_by_default": false,
+        "needs_session_stickiness": true
+      },
+      {
+        "name": "google_calendar",
+        "endpoint_slug": "google-calendar",
+        "connection_type": "http",
+        "connection_string": "http://hlab-google-calendar:3000/mcp",
+        "auth_type": "none",
+        "tools_to_execute": ["*"],
+        "allow_by_default": false,
+        "needs_session_stickiness": true
+      },
+      {
+        "name": "firecrawl",
+        "endpoint_slug": "firecrawl",
+        "connection_type": "http",
+        "connection_string": "https://mcp.firecrawl.dev/v2/mcp-oauth",
+        "auth_type": "oauth",
+        "oauth_config": {
+          "scopes": ["firecrawl:global", "offline_access"],
+          "resource": "https://mcp.firecrawl.dev/v2/mcp-oauth"
+        },
+        "tools_to_execute": ["*"],
+        "allow_by_default": false,
+        "needs_session_stickiness": true
+      },
+      {
+        "name": "slack",
+        "endpoint_slug": "slack",
+        "connection_type": "http",
+        "connection_string": "https://mcp.slack.com/mcp",
+        "auth_type": "oauth",
+        "oauth_config": {
+          "client_id": "env.BIFROST_SLACK_CLIENT_ID",
+          "client_secret": "env.BIFROST_SLACK_CLIENT_SECRET",
+          "authorize_url": "https://slack.com/oauth/v2_user/authorize",
+          "token_url": "https://slack.com/api/oauth.v2.user.access",
+          "resource": "https://mcp.slack.com",
+          "scopes": [
+            "canvases:read",
+            "channels:history",
+            "channels:read",
+            "emoji:read",
+            "files:read",
+            "groups:history",
+            "groups:read",
+            "im:history",
+            "im:read",
+            "lists:read",
+            "mpim:history",
+            "mpim:read",
+            "reactions:read",
+            "search:read.files",
+            "search:read.im",
+            "search:read.mpim",
+            "search:read.private",
+            "search:read.public",
+            "search:read.users",
+            "users:read",
+            "users:read.email"
+          ]
+        },
+        "tools_to_execute": ["*"],
+        "allow_by_default": false,
+        "needs_session_stickiness": true
       }
     ]
   }

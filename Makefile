@@ -16,7 +16,7 @@ else
   INFISICAL_RUN :=
 endif
 
-.PHONY: help init nginx-certs nginx-link nginx-apply ufw-apply tailnet-hosts \
+.PHONY: help init nginx-certs nginx-link nginx-apply ufw-apply tailnet-hosts google-calendar-mcp-auth \
         infisical-up infisical-down infisical-ps infisical-logs infisical-restart
 
 # Domains restricted to tailnet-only access (see nginx/snippets/tailnet-only.conf).
@@ -47,6 +47,10 @@ CLOUDFLARE_INI := /etc/letsencrypt/cloudflare.ini
 
 %-restart:
 	cd $* && $(INFISICAL_RUN) docker compose restart
+
+
+google-calendar-mcp-auth:
+	cd google-calendar-mcp && docker compose run --rm -p 127.0.0.1:3500:3500 calendar-mcp node build/auth-server.js
 
 
 # ── Infisical (always uses .env — it IS the secret store) ──
