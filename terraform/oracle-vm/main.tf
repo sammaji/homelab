@@ -14,6 +14,7 @@ provider "oci" {
 
 locals {
   compartment_id = coalesce(var.compartment_ocid, var.tenancy_ocid)
+  estimated_monthly_vpu_cost = length(var.instances) * var.boot_volume_gb * max(var.boot_volume_vpus_per_gb - 10, 0) * var.vpu_price_per_gb_month
 }
 
 data "oci_identity_availability_domains" "this" {

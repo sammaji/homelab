@@ -27,6 +27,7 @@ resource "oci_core_instance" "this" {
     source_type             = "image"
     source_id               = data.oci_core_images.ubuntu_arm.images[0].id
     boot_volume_size_in_gbs = var.boot_volume_gb
+    boot_volume_vpus_per_gb = var.boot_volume_vpus_per_gb
   }
 
   create_vnic_details {
@@ -47,8 +48,7 @@ resource "oci_core_instance" "this" {
   preserve_boot_volume = false
 
   lifecycle {
-    # Newer images get published regularly - don't recreate the VMs when they do
-    ignore_changes = [source_details[0].source_id]
+    ignore_changes = [source_details[0].source_id, source_details[0].boot_volume_vpus_per_gb]
 
     precondition {
       condition     = length(var.instances) * var.ocpus_per_instance <= 2
@@ -62,5 +62,20 @@ resource "oci_core_instance" "this" {
       condition     = length(var.instances) * var.boot_volume_gb <= 200
       error_message = "Total boot volume size (${length(var.instances) * var.boot_volume_gb}GB) exceeds the Always Free block storage limit of 200GB."
     }
+    precondition {
+      condition     = local.estimated_monthly_vpu_cost <= var.budget_amount
+      error_message = "Estimated VPU cost (${format("%.2f", local.estimated_monthly_vpu_cost)}/month) exceeds budget_amount (${var.budget_amount}). Lower boot_volume_vpus_per_gb or knowingly raise budget_amount."
+    }
+  }
+}
+
+# In-place, online VPU change on each existing boot volume (no reboot, no data loss).
+resource "terraform_data" "boot_volume_vpus" {
+  for_each = oci_core_instance.this
+
+  triggers_replace = [each.value.boot_volume_id, var.boot_volume_vpus_per_gb]
+
+  provisioner "local-exec" {
+    command = "oci --profile ${var.oci_config_profile} --region ${var.region} bv boot-volume update --boot-volume-id ${each.value.boot_volume_id} --vpus-per-gb ${var.boot_volume_vpus_per_gb} --force --wait-for-state AVAILABLE --query 'data.\"vpus-per-gb\"'"
   }
 }
