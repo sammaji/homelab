@@ -73,6 +73,23 @@ variable "boot_volume_gb" {
   }
 }
 
+variable "boot_volume_vpus_per_gb" {
+  description = "Boot volume performance units per GB (budget.tf guards the cost)."
+  type        = number
+  default     = 10
+
+  validation {
+    condition     = contains([10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120], var.boot_volume_vpus_per_gb)
+    error_message = "boot_volume_vpus_per_gb must be a multiple of 10 between 10 and 120."
+  }
+}
+
+variable "vpu_price_per_gb_month" {
+  description = "List price of 1 VPU per GB per month in your billing currency, used only to estimate cost for the budget guardrail. Check https://www.oracle.com/cloud/price-list/ (Block Volume - Performance Units)."
+  type        = number
+  default     = 0.0023
+}
+
 variable "ssh_public_key_path" {
   description = "Public key installed for the `ubuntu` user."
   type        = string
@@ -97,7 +114,18 @@ variable "budget_alert_email" {
 }
 
 variable "budget_amount" {
-  description = "Monthly budget in your account's billing currency. Alerts fire on any actual spend, so this just needs to be small."
+  description = "Monthly budget in your account's billing currency (SGD). Alerts fire at 50/80/100/120% of actual spend and when the forecast passes 100%. Plans fail if estimated VPU cost exceeds it."
   type        = number
   default     = 1
+
+  validation {
+    condition     = var.budget_amount > 0
+    error_message = "budget_amount must be > 0."
+  }
+}
+
+variable "early_alert_amounts" {
+  description = "Absolute monthly spend amounts (billing currency, SGD) that each trigger an early-warning email."
+  type        = list(number)
+  default     = [1, 5]
 }
