@@ -1,0 +1,4 @@
+# per-service config
+config/
+# downloaded media files
+data/

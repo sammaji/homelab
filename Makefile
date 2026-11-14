@@ -26,7 +26,7 @@ TAILNET_DOMAINS := grafana.sammaji.com infisical.sammaji.com
 # Domains this host serves; nginx-certs issues one Let's Encrypt cert per domain
 # (the vhosts reference /etc/letsencrypt/live/<domain>/). DNS-01 via Cloudflare, so no
 # public port 80 is needed - works on a tailnet-only host.
-CERT_DOMAINS   := bifrost.sammaji.com grafana.sammaji.com infisical.sammaji.com \
+CERT_DOMAINS   := bifrost.sammaji.com grafana.sammaji.com infisical.sammaji.com jellyfin.sammaji.com \
                   listmonk.sammaji.com n8n.sammaji.com
 CERTBOT_EMAIL  ?=
 CLOUDFLARE_INI := /etc/letsencrypt/cloudflare.ini
