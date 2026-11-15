@@ -1,4 +1,4 @@
 variable "vps_ip" {
-  description = "Public IP of the VPS"
+  description = "oracle-vm-hlab's IP (its Tailscale IP: hlab records are tailnet-only)"
   type        = string
 }

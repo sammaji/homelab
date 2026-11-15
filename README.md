@@ -13,6 +13,7 @@ Self-hosted infrastructure for a single VPS: Docker Compose stacks, nginx revers
 │   └── create_symlinks.sh  # Bootstraps .env and per-stack symlinks
 ├── infisical/              # Secret manager (Infisical + Postgres + Redis)
 ├── bifrost/                # Bifrost LLM gateway (+ Postgres)
+├── kai/                    # Kai's library service (api.kai.sammaji.com)
 ├── listmonk/               # Listmonk newsletter/mailing list manager (+ Postgres)
 ├── monitoring/             # OTel Collector + Prometheus + Tempo + Grafana
 ├── nginx/                  # Reverse proxy configs (sites, snippets, conf.d)
@@ -29,6 +30,7 @@ Self-hosted infrastructure for a single VPS: Docker Compose stacks, nginx revers
 | `bifrost` | LLM gateway (UI + API, Postgres). `bifrost.sammaji.com`: `/v1`, `/openai`, `/anthropic` public, rest tailnet-only | 5025 |
 | `media` | Jellyfin (public via `jellyfin.sammaji.com`) + Prowlarr/Radarr/Sonarr + qBittorrent. Admin UIs bind to loopback only — reach via Tailscale/SSH tunnel | 5630–5635 |
 | `listmonk` | Newsletter/mailing list manager. `listmonk.sammaji.com`: subscriber-facing pages (`/subscription`, `/link`, `/campaign`) and the SES bounce webhook public, admin UI tailnet-only + Postgres. SMTP (AWS SES) is configured post-boot via the admin UI - see [`listmonk/ses-smtp-setup.md`](listmonk/ses-smtp-setup.md) | 5055 |
+| `kai` | Kai's library: the MCP catalog, icons and model data Kai instances read. Built from `github.com/sammaji/kai`; public, read-only via `api.kai.sammaji.com`. `make kai-build` to update | 5070 |
 | `monitoring` | OpenTelemetry observability: metrics → Prometheus, traces → Tempo, dashboards → Grafana (tailnet-only via `grafana.sammaji.com`) | 5000–5007 |
 
 See [`PORTS.md`](PORTS.md) for the full host port registry. Rule: keep a 5–10 port buffer between services (20 for large ones). See [Networking](#networking) for which services are public vs. tailnet-only.
@@ -85,7 +87,7 @@ The VPS runs [Tailscale](https://tailscale.com) alongside `ufw` and nginx to spl
 every service into one of three access tiers:
 
 - **Public** — reachable from the internet on 80/443, no restriction (e.g.
-  `nocodb.sammaji.com`, `api.budget-bee.app`, `proxy.watchthat.site`).
+  `nocodb.sammaji.com`, `api.kai.sammaji.com`, `proxy.watchthat.site`).
 - **Tailnet-only** — the nginx vhost's `location /` includes
   [`nginx/snippets/tailnet-only.conf`](nginx/snippets/tailnet-only.conf), which 403s
   any request not sourced from the tailnet's `100.64.0.0/10` range or localhost (e.g.
@@ -128,7 +130,7 @@ cp terraform.tfvars.example terraform.tfvars   # fill in
 terraform init && terraform plan
 ```
 
-- **cloudflare-dns** — manages DNS records for `sammaji.com`, `budget-bee.app`, `watchthat.site`. Needs `CLOUDFLARE_API_TOKEN` (`Zone:DNS:Edit` + `Zone:Zone:Read`).
+- **cloudflare-dns** — manages DNS records for `sammaji.com` and `watchthat.site`. Needs `CLOUDFLARE_API_TOKEN` (`Zone:DNS:Edit` + `Zone:Zone:Read`).
 - **gcp-vm** — provisions the GCP VM. Needs `GOOGLE_CREDENTIALS` (service-account key path or JSON). See [`terraform/gcp-vm/SETUP.md`](terraform/gcp-vm/SETUP.md).
 - **aws-ses** — provisions AWS SES for `updates.budget-bee.app` (domain verification, DKIM, MAIL FROM, SPF/DMARC, writing the resulting DNS records into the `budget-bee.app` Cloudflare zone directly), an IAM user scoped to that identity for listmonk's SMTP credentials, and a $10/mo cost cap with an automatic send cutoff. Needs `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` (SES, IAM, Budgets/Cost Explorer) and `CLOUDFLARE_API_TOKEN`. See [`terraform/aws-ses/README.md`](terraform/aws-ses/README.md).
 
