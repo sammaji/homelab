@@ -1,0 +1,18 @@
+services:
+  kai-library:
+    build:
+      context: https://github.com/sammaji/kai.git#main
+      dockerfile: infra/Dockerfile
+      target: library
+    image: hlab-kai-library:local
+    container_name: hlab-kai-library
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:5000:4100
+    networks:
+      - kai-net
+
+networks:
+  kai-net:
+    name: hlab-kai-net
+    driver: bridge

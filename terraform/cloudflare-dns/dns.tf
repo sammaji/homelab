@@ -2,6 +2,7 @@ locals {
   sammaji_subdomains = toset([
     "bifrost",
     "grafana",
+    "hermes",
     "infisical",
     "listmonk",
     "n8n",
@@ -52,12 +53,36 @@ resource "cloudflare_dns_record" "scp_sammaji_com" {
   ttl     = 60
 }
 
-# ── budget-bee.app subdomains ──
-resource "cloudflare_dns_record" "api_budget_bee_app" {
-  zone_id = data.cloudflare_zone.budget_bee_app.id
-  name    = "api.budget-bee.app"
+resource "cloudflare_dns_record" "kai_sammaji_com" {
+  zone_id = data.cloudflare_zone.sammaji_com.id
+  name    = "kai.sammaji.com"
+  type    = "CNAME"
+  content = "7d77d3137040db9f.vercel-dns-017.com"
+  proxied = false
+  ttl     = 60
+}
+
+# ── Public records on oracle-vm-prod (public IP, read from terraform/oracle-vm) ──
+resource "cloudflare_dns_record" "api_kai_sammaji_com" {
+  zone_id = data.cloudflare_zone.sammaji_com.id
+  name    = "api.kai.sammaji.com"
   type    = "A"
-  content = var.vps_ip
+  content = local.prod_vm_ip
+  proxied = false
+  ttl     = 60
+}
+
+# Was a tailnet record on hlab; same Cloudflare record, now pointing at prod.
+moved {
+  from = cloudflare_dns_record.sammaji_com["api.kai"]
+  to   = cloudflare_dns_record.api_kai_sammaji_com
+}
+
+resource "cloudflare_dns_record" "docs_kai_sammaji_com" {
+  zone_id = data.cloudflare_zone.sammaji_com.id
+  name    = "docs.kai.sammaji.com"
+  type    = "CNAME"
+  content = "bbfc79eb87e91ef5.vercel-dns-017.com"
   proxied = false
   ttl     = 60
 }

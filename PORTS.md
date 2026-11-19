@@ -1,14 +1,18 @@
 # Ports
 
-Host port registry for **`oracle-vm-hlab`**, the only host this repo's stacks
-run on.
+Host port registry for **`oracle-vm-hlab`** (self-hosted services, tailnet-only) and
+**`oracle-vm-prod`** (public traffic). Each VM has its own allocations, both starting
+at **5000**, so the same port can mean different things on each VM. `PROD_STACKS` in
+the `Makefile` says which stacks run on prod; moving a stack to the other VM means
+giving it a block in that VM's table.
 
-Host ports start at **5000**. Each stack gets a block and keeps a buffer for
-future containers: at least 5-10 ports, 20 for large stacks. Containers are
-reached through nginx or directly over the tailnet. Nothing here is opened
-publicly.
+Each stack gets a block and keeps a buffer for future containers: at least 5-10
+ports, 20 for large stacks. Containers bind to loopback and are reached through
+nginx or over the tailnet. Nothing here is opened publicly.
 
 ## Allocations
+
+### oracle-vm-hlab
 
 | Block | Stack |
 |-------|-------|
@@ -19,7 +23,16 @@ publicly.
 | 5055-5069 | `listmonk` |
 | 5070+ | free (next stack starts here) |
 
+### oracle-vm-prod
+
+| Block | Stack |
+|-------|-------|
+| 5000-5004 | `kai` |
+| 5005+ | free (next stack starts here) |
+
 ## Ports
+
+### oracle-vm-hlab
 
 | Host Port | Container Port | Service | Description |
 |-----------|---------------|---------|-------------|
@@ -37,3 +50,9 @@ publicly.
 | 5025 | 8080 | bifrost | Bifrost UI & API |
 | 5040 | 5678 | n8n | n8n UI & API (webhooks) |
 | 5055 | 9000 | listmonk | Listmonk UI & API |
+
+### oracle-vm-prod
+
+| Host Port | Container Port | Service | Description |
+|-----------|---------------|---------|-------------|
+| 5000 | 4100 | kai-library | Kai library (MCP catalog, icons, models), served at api.kai.sammaji.com |
