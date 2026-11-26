@@ -1,18 +1,13 @@
 locals {
-  sammaji_subdomains = toset([
-    "bifrost",
-    "grafana",
-    "hermes",
-    "infisical",
-    "listmonk",
-    "n8n",
-    "nocodb",
-  ])
-
-  watchthat_site_subdomains = toset([
-    "proxy",
-    "bifrost"
-  ])
+  sammaji_subdomains = {
+    "bifrost" : local.hlab_vm_ip,  # /v1, /openai, /anthropic
+    "listmonk" : local.hlab_vm_ip, # subscriber pages, SES webhook
+    "n8n" : local.hlab_vm_ip,      # /webhook*
+    "fitness" : var.vps_ip,
+    "grafana" : var.vps_ip,
+    "infisical" : var.vps_ip,
+    "nocodb" : var.vps_ip,
+  }
 
   watchthat_site_cnames = {
     "@" : "97378c52d48be7eb.vercel-dns-017.com"
@@ -30,7 +25,7 @@ resource "cloudflare_dns_record" "sammaji_com" {
   zone_id = data.cloudflare_zone.sammaji_com.id
   name    = "${each.key}.sammaji.com"
   type    = "A"
-  content = var.vps_ip
+  content = each.value
   proxied = false
   ttl     = 60
 }
@@ -78,6 +73,33 @@ moved {
   to   = cloudflare_dns_record.api_kai_sammaji_com
 }
 
+resource "cloudflare_dns_record" "wts_sammaji_com" {
+  zone_id = data.cloudflare_zone.sammaji_com.id
+  name    = "wts.sammaji.com"
+  type    = "CNAME"
+  content = "f031a067f76f70d2.vercel-dns-017.com"
+  proxied = false
+  ttl     = 60
+}
+
+resource "cloudflare_dns_record" "docs_wts_sammaji_com" {
+  zone_id = data.cloudflare_zone.sammaji_com.id
+  name    = "docs.wts.sammaji.com"
+  type    = "CNAME"
+  content = "ec20fcd46674a8ab.vercel-dns-017.com"
+  proxied = false
+  ttl     = 60
+}
+
+resource "cloudflare_dns_record" "samplepages_wts_sammaji_com" {
+  zone_id = data.cloudflare_zone.sammaji_com.id
+  name    = "samplepages.wts.sammaji.com"
+  type    = "CNAME"
+  content = "d27b79dedcbdefc9.vercel-dns-017.com"
+  proxied = false
+  ttl     = 60
+}
+
 resource "cloudflare_dns_record" "docs_kai_sammaji_com" {
   zone_id = data.cloudflare_zone.sammaji_com.id
   name    = "docs.kai.sammaji.com"
@@ -96,18 +118,6 @@ resource "cloudflare_dns_record" "watchthat_site_cnames" {
   name    = each.key == "@" ? "@" : "${each.key}.watchthat.site"
   type    = "CNAME"
   content = each.value
-  proxied = false
-  ttl     = 60
-}
-
-# ── watchthat.site subdomains ──
-resource "cloudflare_dns_record" "watchthat_site" {
-  for_each = local.watchthat_site_subdomains
-
-  zone_id = data.cloudflare_zone.watchthat_site.id
-  name    = "${each.key}.watchthat.site"
-  type    = "A"
-  content = var.vps_ip
   proxied = false
   ttl     = 60
 }

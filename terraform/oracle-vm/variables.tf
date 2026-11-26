@@ -41,7 +41,7 @@ variable "instances" {
   }))
   default = {
     prod = { public_web = true }
-    hlab = { public_web = false }
+    hlab = { public_web = true }
   }
 }
 

@@ -22,7 +22,7 @@ data "cloudflare_zone" "watchthat_site" {
   }
 }
 
-# oracle-vm-prod's public IP, from the oracle-vm module's state (apply that first).
+# The VMs' public IPs, from the oracle-vm module's state (apply that first).
 data "terraform_remote_state" "oracle_vm" {
   backend = "local"
   config = {
@@ -32,4 +32,5 @@ data "terraform_remote_state" "oracle_vm" {
 
 locals {
   prod_vm_ip = data.terraform_remote_state.oracle_vm.outputs.public_ips["oracle-vm-prod"]
+  hlab_vm_ip = data.terraform_remote_state.oracle_vm.outputs.public_ips["oracle-vm-hlab"]
 }

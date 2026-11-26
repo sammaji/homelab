@@ -40,12 +40,13 @@ endif
 
 # Domains restricted to tailnet-only access (see nginx/snippets/tailnet-only.conf).
 # Keep in sync with which vhosts include that snippet.
-TAILNET_DOMAINS := grafana.sammaji.com infisical.sammaji.com
+TAILNET_DOMAINS := grafana.sammaji.com infisical.sammaji.com fitness.sammaji.com \
+                   bifrost.sammaji.com listmonk.sammaji.com n8n.sammaji.com
 
 # Domains each host serves; nginx-certs issues one Let's Encrypt cert per domain
 # (the vhosts reference /etc/letsencrypt/live/<domain>/). DNS-01 via Cloudflare, so no
 # public port 80 is needed - works on a tailnet-only host.
-HLAB_CERT_DOMAINS := bifrost.sammaji.com grafana.sammaji.com infisical.sammaji.com \
+HLAB_CERT_DOMAINS := bifrost.sammaji.com fitness.sammaji.com grafana.sammaji.com infisical.sammaji.com \
                      listmonk.sammaji.com n8n.sammaji.com
 PROD_CERT_DOMAINS := api.kai.sammaji.com
 CERT_DOMAINS   := $(if $(filter prod,$(ENV)),$(PROD_CERT_DOMAINS),$(HLAB_CERT_DOMAINS))

@@ -21,7 +21,8 @@ nginx or over the tailnet. Nothing here is opened publicly.
 | 5025-5039 | `bifrost` |
 | 5040-5054 | `n8n` |
 | 5055-5069 | `listmonk` |
-| 5070+ | free (next stack starts here) |
+| 5070-5079 | `sparkyfitness` |
+| 5080+ | free (next stack starts here) |
 
 ### oracle-vm-prod
 
@@ -50,6 +51,7 @@ nginx or over the tailnet. Nothing here is opened publicly.
 | 5025 | 8080 | bifrost | Bifrost UI & API |
 | 5040 | 5678 | n8n | n8n UI & API (webhooks) |
 | 5055 | 9000 | listmonk | Listmonk UI & API |
+| 5070 | 80 | sparkyfitness-frontend | SparkyFitness UI (its nginx proxies /api to the server), served at fitness.sammaji.com |
 
 ### oracle-vm-prod
 
